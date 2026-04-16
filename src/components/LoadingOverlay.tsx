@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "til-intro-played";
 
+type Phase = "writing" | "fading" | "done";
+
 export function LoadingOverlay() {
-  // Start as null to avoid SSR/client mismatch — decide on mount.
-  const [phase, setPhase] = useState<"hidden" | "writing" | "fading" | "done">("hidden");
+  // Start "done" so SSR/initial render is invisible — pick the real phase on mount.
+  const [phase, setPhase] = useState<Phase>("done");
 
   useEffect(() => {
     let played = false;
@@ -15,16 +17,16 @@ export function LoadingOverlay() {
     }
 
     if (played) {
-      // Quick fade only
+      // Quick fade only — flash a white overlay, then disappear.
       setPhase("fading");
-      const t = setTimeout(() => setPhase("done"), 400);
+      const t = setTimeout(() => setPhase("done"), 350);
       return () => clearTimeout(t);
     }
 
     setPhase("writing");
     document.body.style.overflow = "hidden";
 
-    const fadeTimer = setTimeout(() => setPhase("fading"), 2200);
+    const fadeTimer = setTimeout(() => setPhase("fading"), 2400);
     const doneTimer = setTimeout(() => {
       setPhase("done");
       document.body.style.overflow = "";
@@ -33,7 +35,7 @@ export function LoadingOverlay() {
       } catch {
         // ignore
       }
-    }, 2900);
+    }, 3000);
 
     return () => {
       clearTimeout(fadeTimer);
@@ -51,28 +53,13 @@ export function LoadingOverlay() {
         phase === "fading" ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
     >
-      <svg
-        viewBox="0 0 600 160"
-        className="w-[78%] max-w-[640px] h-auto"
-        role="img"
-        aria-label="Traced in Light"
-      >
-        <text
-          x="50%"
-          y="58%"
-          textAnchor="middle"
-          className={`til-handwrite ${phase === "writing" ? "is-writing" : ""}`}
-          style={{
-            fontFamily: '"Pinyon Script", "Great Vibes", "Dancing Script", cursive',
-            fontSize: "92px",
-            fill: "transparent",
-            stroke: "var(--foreground)",
-            strokeWidth: 0.9,
-          }}
-        >
-          Traced in Light
-        </text>
-      </svg>
+      {phase === "writing" && (
+        <div className="relative px-6">
+          <h1 className="font-script text-foreground text-6xl sm:text-7xl md:text-8xl leading-none til-write is-writing">
+            Traced in Light
+          </h1>
+        </div>
+      )}
     </div>
   );
 }
