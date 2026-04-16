@@ -84,7 +84,7 @@ function ContactPage() {
                 </p>
               </div>
             ) : (
-              <form onSubmit={onSubmit} className="space-y-10">
+              <form onSubmit={onSubmit} className="space-y-10" suppressHydrationWarning>
                 <Field label="Your Name" name="name" required />
                 <Field label="Email Address" name="email" type="email" required />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
