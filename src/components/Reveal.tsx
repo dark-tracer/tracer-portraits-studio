@@ -28,6 +28,5 @@ export function Reveal({ children, className = "", delay = 0, as: Tag = "div" }:
     return () => observer.disconnect();
   }, [delay]);
 
-  // @ts-expect-error - dynamic tag
-  return <Tag ref={ref} className={`reveal ${className}`}>{children}</Tag>;
+  return <Tag ref={ref as React.RefObject<HTMLDivElement>} className={`reveal ${className}`}>{children}</Tag>;
 }
