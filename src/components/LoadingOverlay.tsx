@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "til-intro-played";
 
+type Phase = "writing" | "fading" | "done";
+
 export function LoadingOverlay() {
-  // Start as "done" so SSR/initial render is invisible — decide actual phase on mount.
-  const [phase, setPhase] = useState<"hidden" | "writing" | "fading" | "done">("done");
-  const [mounted, setMounted] = useState(false);
+  // Start "done" so SSR/initial render is invisible — pick the real phase on mount.
+  const [phase, setPhase] = useState<Phase>("done");
+
+  useEffect(() => {
     let played = false;
     try {
       played = sessionStorage.getItem(STORAGE_KEY) === "1";
@@ -14,8 +17,9 @@ export function LoadingOverlay() {
     }
 
     if (played) {
+      // Quick fade only — flash a white overlay, then disappear.
       setPhase("fading");
-      const t = setTimeout(() => setPhase("done"), 400);
+      const t = setTimeout(() => setPhase("done"), 350);
       return () => clearTimeout(t);
     }
 
@@ -42,10 +46,6 @@ export function LoadingOverlay() {
 
   if (phase === "done") return null;
 
-  const isFirstVisit = phase === "writing" || phase === "fading";
-  // For revisit (instant fade), don't show the text at all — just a quick white fade.
-  const showText = phase === "writing" || (phase === "fading" && isFirstVisit);
-
   return (
     <div
       aria-hidden="true"
@@ -53,14 +53,9 @@ export function LoadingOverlay() {
         phase === "fading" ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
     >
-      {showText && (
+      {phase === "writing" && (
         <div className="relative px-6">
-          {/* Handwritten reveal: clip-path swipes left → right like a pen drawing */}
-          <h1
-            className={`font-script text-foreground text-6xl sm:text-7xl md:text-8xl leading-none til-write ${
-              phase === "writing" ? "is-writing" : ""
-            }`}
-          >
+          <h1 className="font-script text-foreground text-6xl sm:text-7xl md:text-8xl leading-none til-write is-writing">
             Traced in Light
           </h1>
         </div>
