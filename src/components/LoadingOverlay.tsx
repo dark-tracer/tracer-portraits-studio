@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 const STORAGE_KEY = "til-intro-played";
 
 export function LoadingOverlay() {
-  const [phase, setPhase] = useState<"hidden" | "writing" | "fading" | "done">("hidden");
-
-  useEffect(() => {
+  // Start as "done" so SSR/initial render is invisible — decide actual phase on mount.
+  const [phase, setPhase] = useState<"hidden" | "writing" | "fading" | "done">("done");
+  const [mounted, setMounted] = useState(false);
     let played = false;
     try {
       played = sessionStorage.getItem(STORAGE_KEY) === "1";
