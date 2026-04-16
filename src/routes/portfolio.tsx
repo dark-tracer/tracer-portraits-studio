@@ -28,9 +28,9 @@ const items: Item[] = [
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
     meta: [
-      { title: "Portfolio — By Tracer" },
-      { name: "description", content: "A selection of portrait and wedding photography by Tracer." },
-      { property: "og:title", content: "Portfolio — By Tracer" },
+      { title: "Portfolio — Traced in Light" },
+      { name: "description", content: "A selection of portrait and wedding photography by Traced in Light." },
+      { property: "og:title", content: "Portfolio — Traced in Light" },
       { property: "og:description", content: "A selection of portrait and wedding photography." },
       { property: "og:image", content: p1 },
       { name: "twitter:image", content: p1 },
