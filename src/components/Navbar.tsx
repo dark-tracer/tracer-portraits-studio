@@ -39,10 +39,10 @@ export function Navbar() {
       <nav className="mx-auto max-w-[1600px] px-6 md:px-12 flex items-center justify-between">
         <Link
           to="/"
-          className="font-serif text-xl md:text-2xl tracking-wide text-foreground"
+          className="font-script text-3xl md:text-4xl leading-none text-foreground"
           onClick={() => setOpen(false)}
         >
-          By Tracer
+          Traced in Light
         </Link>
 
         <ul className="hidden md:flex items-center gap-10">

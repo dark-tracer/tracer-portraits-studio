@@ -1,6 +1,7 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 
 import appCss from "../styles.css?url";
 
@@ -31,13 +32,13 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "By Tracer — Portrait & Wedding Photography" },
+      { title: "Traced in Light — Portrait & Wedding Photography" },
       {
         name: "description",
         content:
-          "By Tracer is a portrait and wedding photography studio capturing quiet, intentional images that endure.",
+          "Traced in Light is a portrait and wedding photography studio capturing quiet, intentional images that endure.",
       },
-      { name: "author", content: "By Tracer" },
+      { name: "author", content: "Traced in Light" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -47,7 +48,7 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500&family=Pinyon+Script&display=swap",
       },
     ],
   }),
@@ -73,6 +74,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   return (
     <>
+      <LoadingOverlay />
       <Navbar />
       <main>
         <Outlet />
