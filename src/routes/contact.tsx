@@ -6,9 +6,9 @@ import { Instagram, Mail, MapPin, Check } from "lucide-react";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — By Tracer" },
-      { name: "description", content: "Begin an inquiry with By Tracer for portrait, wedding, or event photography." },
-      { property: "og:title", content: "Contact — By Tracer" },
+      { title: "Contact — Traced in Light" },
+      { name: "description", content: "Begin an inquiry with Traced in Light for portrait, wedding, or event photography." },
+      { property: "og:title", content: "Contact — Traced in Light" },
       { property: "og:description", content: "Begin an inquiry for portrait, wedding, or event photography." },
     ],
   }),

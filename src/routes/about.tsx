@@ -5,10 +5,10 @@ import about from "@/assets/about.jpg";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — By Tracer" },
-      { name: "description", content: "Meet Tracer, a portrait and wedding photographer making quiet, honest images." },
-      { property: "og:title", content: "About — By Tracer" },
-      { property: "og:description", content: "Meet Tracer — portrait and wedding photographer." },
+      { title: "About — Traced in Light" },
+      { name: "description", content: "Meet the photographer behind Traced in Light, making quiet, honest images." },
+      { property: "og:title", content: "About — Traced in Light" },
+      { property: "og:description", content: "Meet the photographer behind Traced in Light." },
       { property: "og:image", content: about },
       { name: "twitter:image", content: about },
     ],
@@ -25,7 +25,7 @@ function AboutPage() {
             <div className="image-hover">
               <img
                 src={about}
-                alt="Portrait of Tracer with camera"
+                alt="Portrait of the photographer with camera"
                 loading="lazy"
                 width={1024}
                 height={1280}
@@ -33,7 +33,7 @@ function AboutPage() {
               />
             </div>
             <p className="mt-4 text-[11px] uppercase tracking-widest-xl text-muted-foreground">
-              Tracer — Founder & Photographer
+              Founder & Photographer
             </p>
           </Reveal>
 
@@ -50,9 +50,9 @@ function AboutPage() {
             <div className="mt-12 space-y-6 text-base md:text-lg leading-relaxed text-foreground/85 max-w-xl font-light">
               <Reveal delay={150}>
                 <p>
-                  I'm Tracer — a portrait and wedding photographer based between studios and
-                  the open road. My work began with film, with the patience it requires, and
+                  Traced in Light began with film, with the patience it requires, and
                   with the belief that a single honest frame outlives a hundred polished ones.
+                  My work lives between studios and the open road.
                 </p>
               </Reveal>
               <Reveal delay={250}>

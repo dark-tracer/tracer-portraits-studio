@@ -9,13 +9,13 @@ import { ArrowRight } from "lucide-react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "By Tracer — Portrait & Wedding Photography" },
+      { title: "Traced in Light — Portrait & Wedding Photography" },
       {
         name: "description",
         content:
-          "Editorial portrait and wedding photography by Tracer. Quiet, intentional images that endure.",
+          "Editorial portrait and wedding photography by Traced in Light. Quiet, intentional images that endure.",
       },
-      { property: "og:title", content: "By Tracer — Portrait & Wedding Photography" },
+      { property: "og:title", content: "Traced in Light — Portrait & Wedding Photography" },
       {
         property: "og:description",
         content: "Editorial portrait and wedding photography. Quiet, intentional, made to last.",
@@ -34,7 +34,7 @@ function Index() {
       <section className="relative h-screen w-full overflow-hidden">
         <img
           src={hero}
-          alt="Editorial portrait by Tracer"
+          alt="Editorial portrait by Traced in Light"
           width={1920}
           height={1280}
           className="absolute inset-0 h-full w-full object-cover"
@@ -48,7 +48,7 @@ function Index() {
           </Reveal>
           <Reveal delay={400}>
             <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl text-background font-light leading-none">
-              By Tracer
+              Traced in Light
             </h1>
           </Reveal>
           <Reveal delay={700}>
@@ -82,8 +82,8 @@ function Index() {
             </p>
           </Reveal>
           <Reveal delay={400}>
-            <p className="mt-10 text-[11px] uppercase tracking-widest-xl text-muted-foreground">
-              — Tracer
+            <p className="mt-10 font-script text-3xl text-muted-foreground">
+              Traced in Light
             </p>
           </Reveal>
         </div>

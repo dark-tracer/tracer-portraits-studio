@@ -4,12 +4,12 @@ import { Reveal } from "@/components/Reveal";
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Services & Investment — By Tracer" },
+      { title: "Services & Investment — Traced in Light" },
       {
         name: "description",
-        content: "Portrait sessions, wedding coverage, and event photography by Tracer. Inquire for pricing.",
+        content: "Portrait sessions, wedding coverage, and event photography by Traced in Light. Inquire for pricing.",
       },
-      { property: "og:title", content: "Services & Investment — By Tracer" },
+      { property: "og:title", content: "Services & Investment — Traced in Light" },
       {
         property: "og:description",
         content: "Portrait, wedding, and event photography. Inquire for pricing.",
