@@ -1,0 +1,71 @@
+{
+  "events": [
+    {
+      "id": "kwabena-darley-wedding",
+      "name": "Kwabena & Darley's Wedding",
+      "category": "wedding",
+      "date": "2024-11-15",
+      "coverImage": "/src/assets/portfolio-1.jpg",
+      "description": "A beautiful outdoor ceremony in Accra, captured in soft golden light.",
+      "photos": [
+        "/src/assets/portfolio-1.jpg",
+        "/src/assets/portfolio-3.jpg",
+        "/src/assets/portfolio-5.jpg",
+        "/src/assets/portfolio-7.jpg"
+      ]
+    },
+    {
+      "id": "sandra-portrait-session",
+      "name": "Sandra Portrait Session",
+      "category": "portrait",
+      "date": "2024-10-02",
+      "coverImage": "/src/assets/portfolio-2.jpg",
+      "description": "An intimate black and white portrait study in studio window light.",
+      "photos": [
+        "/src/assets/portfolio-2.jpg",
+        "/src/assets/portfolio-6.jpg",
+        "/src/assets/portfolio-8.jpg"
+      ]
+    },
+    {
+      "id": "mensah-family-shoot",
+      "name": "Mensah Family Shoot",
+      "category": "portrait",
+      "date": "2024-08-20",
+      "coverImage": "/src/assets/portfolio-4.jpg",
+      "description": "A warm, natural family session at sunset in an open field.",
+      "photos": [
+        "/src/assets/portfolio-4.jpg",
+        "/src/assets/portfolio-6.jpg",
+        "/src/assets/portfolio-2.jpg"
+      ]
+    },
+    {
+      "id": "aurora-gala-night",
+      "name": "Aurora Gala Night",
+      "category": "event",
+      "date": "2024-09-12",
+      "coverImage": "/src/assets/portfolio-7.jpg",
+      "description": "A candid evening of celebration — movement, light, and quiet moments.",
+      "photos": [
+        "/src/assets/portfolio-7.jpg",
+        "/src/assets/portfolio-3.jpg",
+        "/src/assets/portfolio-5.jpg",
+        "/src/assets/portfolio-1.jpg"
+      ]
+    },
+    {
+      "id": "adjei-anniversary",
+      "name": "Adjei Anniversary",
+      "category": "wedding",
+      "date": "2024-06-28",
+      "coverImage": "/src/assets/portfolio-5.jpg",
+      "description": "Ten years, revisited — a quiet vow renewal by the coast.",
+      "photos": [
+        "/src/assets/portfolio-5.jpg",
+        "/src/assets/portfolio-1.jpg",
+        "/src/assets/portfolio-3.jpg"
+      ]
+    }
+  ]
+}
