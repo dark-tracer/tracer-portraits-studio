@@ -52,7 +52,7 @@ function PortfolioPage() {
     { key: "wedding-event", label: "Weddings & Events" },
   ];
 
-  const recent = recentPhotos.slice(0, 10);
+  const recent = recentPhotos.slice(0, 3);
   const lightboxImages = recent.map((p) => ({ src: p.src, alt: p.eventName }));
 
   return (
