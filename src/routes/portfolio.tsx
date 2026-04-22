@@ -1,62 +1,64 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Reveal } from "@/components/Reveal";
 import { Lightbox } from "@/components/Lightbox";
-import p1 from "@/assets/portfolio-1.jpg";
-import p2 from "@/assets/portfolio-2.jpg";
-import p3 from "@/assets/portfolio-3.jpg";
-import p4 from "@/assets/portfolio-4.jpg";
-import p5 from "@/assets/portfolio-5.jpg";
-import p6 from "@/assets/portfolio-6.jpg";
-import p7 from "@/assets/portfolio-7.jpg";
-import p8 from "@/assets/portfolio-8.jpg";
+import {
+  events,
+  recentPhotos,
+  categoryLabel,
+  formatDate,
+  type Category,
+} from "@/lib/portfolio";
 
-type Category = "all" | "portraits" | "weddings";
-type Item = { src: string; alt: string; cat: Exclude<Category, "all">; span: string; ratio: string };
-
-const items: Item[] = [
-  { src: p1, alt: "Bride and groom at golden hour", cat: "weddings", span: "md:col-span-7", ratio: "aspect-[4/5]" },
-  { src: p2, alt: "Black and white portrait of a young man", cat: "portraits", span: "md:col-span-5 md:mt-16", ratio: "aspect-[4/5]" },
-  { src: p4, alt: "Portrait at sunset in field", cat: "portraits", span: "md:col-span-5", ratio: "aspect-[3/4]" },
-  { src: p3, alt: "Wedding ceremony in soft light", cat: "weddings", span: "md:col-span-7 md:mt-12", ratio: "aspect-[4/3]" },
-  { src: p6, alt: "Candid portrait by the window", cat: "portraits", span: "md:col-span-7", ratio: "aspect-[4/3]" },
-  { src: p5, alt: "Bride holding white bouquet", cat: "weddings", span: "md:col-span-5 md:mt-20", ratio: "aspect-square" },
-  { src: p8, alt: "Studio portrait in window light", cat: "portraits", span: "md:col-span-6", ratio: "aspect-square" },
-  { src: p7, alt: "Wedding couple silhouette", cat: "weddings", span: "md:col-span-6 md:mt-12", ratio: "aspect-[4/5]" },
-];
+type Tab = "all" | "portrait" | "wedding-event";
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
     meta: [
       { title: "Portfolio — Traced in Light" },
-      { name: "description", content: "A selection of portrait and wedding photography by Traced in Light." },
+      { name: "description", content: "Portrait, wedding, and event galleries by Traced in Light." },
       { property: "og:title", content: "Portfolio — Traced in Light" },
-      { property: "og:description", content: "A selection of portrait and wedding photography." },
-      { property: "og:image", content: p1 },
-      { name: "twitter:image", content: p1 },
+      { property: "og:description", content: "Portrait, wedding, and event galleries." },
     ],
   }),
   component: PortfolioPage,
 });
 
+// Asymmetric span pattern for event cards (deterministic by index → no layout jitter on filter)
+const SPANS = [
+  { span: "md:col-span-7", ratio: "aspect-[4/5]" },
+  { span: "md:col-span-5 md:mt-16", ratio: "aspect-[4/5]" },
+  { span: "md:col-span-5", ratio: "aspect-[3/4]" },
+  { span: "md:col-span-7 md:mt-12", ratio: "aspect-[4/3]" },
+  { span: "md:col-span-6", ratio: "aspect-square" },
+  { span: "md:col-span-6 md:mt-12", ratio: "aspect-[4/5]" },
+];
+
+function matchesTab(cat: Category, tab: Tab): boolean {
+  if (tab === "all") return true;
+  if (tab === "portrait") return cat === "portrait";
+  return cat === "wedding" || cat === "event";
+}
+
 function PortfolioPage() {
-  const [filter, setFilter] = useState<Category>("all");
-  const [active, setActive] = useState<number | null>(null);
+  const [tab, setTab] = useState<Tab>("all");
+  const [recentIdx, setRecentIdx] = useState<number | null>(null);
 
-  const filtered = useMemo(
-    () => (filter === "all" ? items : items.filter((i) => i.cat === filter)),
-    [filter],
-  );
+  const filteredEvents = useMemo(() => events.filter((e) => matchesTab(e.category, tab)), [tab]);
 
-  const filters: { key: Category; label: string }[] = [
+  const tabs: { key: Tab; label: string }[] = [
     { key: "all", label: "All Work" },
-    { key: "portraits", label: "Portraits" },
-    { key: "weddings", label: "Weddings & Events" },
+    { key: "portrait", label: "Portraits" },
+    { key: "wedding-event", label: "Weddings & Events" },
   ];
+
+  const recent = recentPhotos.slice(0, 10);
+  const lightboxImages = recent.map((p) => ({ src: p.src, alt: p.eventName }));
 
   return (
     <>
-      <section className="pt-40 md:pt-48 pb-16 px-6 md:px-12">
+      {/* Header */}
+      <section className="pt-40 md:pt-48 pb-12 px-6 md:px-12">
         <div className="mx-auto max-w-[1600px]">
           <Reveal>
             <p className="text-[11px] uppercase tracking-widest-xl text-[var(--gold)] mb-4">
@@ -71,20 +73,20 @@ function PortfolioPage() {
             </p>
           </Reveal>
 
-          <Reveal delay={200}>
-            <div className="mt-16 flex flex-wrap gap-x-8 gap-y-3 border-t border-border pt-8">
-              {filters.map((f) => (
+          <Reveal delay={150}>
+            <div className="mt-14 flex flex-wrap gap-x-8 gap-y-3 border-t border-border pt-8">
+              {tabs.map((t) => (
                 <button
-                  key={f.key}
-                  onClick={() => setFilter(f.key)}
+                  key={t.key}
+                  onClick={() => setTab(t.key)}
                   className={`text-[11px] uppercase tracking-widest-xl transition-colors ${
-                    filter === f.key
+                    tab === t.key
                       ? "text-foreground"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {f.label}
-                  {filter === f.key && (
+                  {t.label}
+                  {tab === t.key && (
                     <span className="ml-2 inline-block h-px w-6 align-middle bg-[var(--gold)]" />
                   )}
                 </button>
@@ -94,47 +96,115 @@ function PortfolioPage() {
         </div>
       </section>
 
+      {/* Recently Added — always visible, unfiltered */}
+      <section className="px-6 md:px-12 pb-20">
+        <div className="mx-auto max-w-[1600px]">
+          <Reveal>
+            <div className="flex items-baseline justify-between mb-6">
+              <h2 className="text-[11px] uppercase tracking-widest-xl text-foreground">
+                Recently Added
+              </h2>
+              <span className="text-[11px] uppercase tracking-widest-xl text-muted-foreground">
+                Across all events
+              </span>
+            </div>
+          </Reveal>
+          <Reveal delay={120}>
+            <div className="-mx-6 md:-mx-12 px-6 md:px-12 overflow-x-auto scrollbar-none">
+              <div className="flex gap-4 md:gap-6 pb-2">
+                {recent.map((p, i) => (
+                  <button
+                    key={`${p.eventId}-${i}`}
+                    onClick={() => setRecentIdx(i)}
+                    className="group relative shrink-0 image-hover text-left"
+                    style={{ width: "clamp(220px, 28vw, 340px)" }}
+                    aria-label={`Open photo from ${p.eventName}`}
+                  >
+                    <img
+                      src={p.src}
+                      alt={`${p.eventName} — recent`}
+                      loading="lazy"
+                      className="w-full aspect-[4/5] object-cover"
+                    />
+                    <div className="mt-3 flex items-center justify-between text-[11px] uppercase tracking-widest-xl text-muted-foreground">
+                      <span className="truncate pr-3">{p.eventName}</span>
+                      <span className="text-[var(--gold)] shrink-0">{categoryLabel[p.category]}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Event Cards — asymmetric grid */}
       <section className="px-6 md:px-12 pb-32">
         <div className="mx-auto max-w-[1600px]">
-          <div className="grid grid-cols-12 gap-4 md:gap-8">
-            {filtered.map((item, i) => (
-              <Reveal
-                key={item.src}
-                className={`col-span-12 ${item.span}`}
-                delay={(i % 3) * 120}
-              >
-                <button
-                  onClick={() => setActive(i)}
-                  className="group block w-full text-left image-hover"
-                  aria-label={`Open ${item.alt}`}
-                >
-                  <img
-                    src={item.src}
-                    alt={item.alt}
-                    loading="lazy"
-                    className={`w-full ${item.ratio} object-cover`}
-                  />
-                  <div className="mt-3 flex items-center justify-between text-[11px] uppercase tracking-widest-xl text-muted-foreground">
-                    <span>{item.cat === "portraits" ? "Portrait" : "Wedding"}</span>
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[var(--gold)]">
-                      View →
-                    </span>
-                  </div>
-                </button>
-              </Reveal>
-            ))}
-          </div>
+          <Reveal>
+            <div className="flex items-baseline justify-between mb-8 border-t border-border pt-8">
+              <h2 className="text-[11px] uppercase tracking-widest-xl text-foreground">
+                Events & Sessions
+              </h2>
+              <span className="text-[11px] uppercase tracking-widest-xl text-muted-foreground">
+                {filteredEvents.length} {filteredEvents.length === 1 ? "collection" : "collections"}
+              </span>
+            </div>
+          </Reveal>
+
+          {filteredEvents.length === 0 ? (
+            <p className="text-muted-foreground">No events in this category yet.</p>
+          ) : (
+            <div className="grid grid-cols-12 gap-4 md:gap-8">
+              {filteredEvents.map((ev, i) => {
+                const layout = SPANS[i % SPANS.length];
+                return (
+                  <Reveal
+                    key={ev.id}
+                    className={`col-span-12 ${layout.span}`}
+                    delay={(i % 3) * 120}
+                  >
+                    <Link
+                      to="/portfolio/$eventId"
+                      params={{ eventId: ev.id }}
+                      className="group block image-hover"
+                    >
+                      <img
+                        src={ev.coverImage}
+                        alt={ev.name}
+                        loading="lazy"
+                        className={`w-full ${layout.ratio} object-cover`}
+                      />
+                      <div className="mt-4 flex items-start justify-between gap-6">
+                        <div>
+                          <h3 className="font-serif text-2xl md:text-3xl text-foreground leading-tight">
+                            {ev.name}
+                          </h3>
+                          <p className="mt-2 text-[11px] uppercase tracking-widest-xl text-muted-foreground">
+                            {formatDate(ev.date)}
+                          </p>
+                        </div>
+                        <span className="text-[11px] uppercase tracking-widest-xl text-[var(--gold)] shrink-0 mt-2">
+                          {categoryLabel[ev.category]}
+                        </span>
+                      </div>
+                    </Link>
+                  </Reveal>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
       <Lightbox
-        images={filtered}
-        index={active}
-        onClose={() => setActive(null)}
+        images={lightboxImages}
+        index={recentIdx}
+        onClose={() => setRecentIdx(null)}
         onPrev={() =>
-          setActive((i) => (i === null ? null : (i - 1 + filtered.length) % filtered.length))
+          setRecentIdx((i) => (i === null ? null : (i - 1 + recent.length) % recent.length))
         }
-        onNext={() => setActive((i) => (i === null ? null : (i + 1) % filtered.length))}
+        onNext={() => setRecentIdx((i) => (i === null ? null : (i + 1) % recent.length))}
       />
     </>
   );
