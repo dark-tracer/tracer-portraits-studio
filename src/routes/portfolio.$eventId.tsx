@@ -3,10 +3,10 @@ import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { Lightbox } from "@/components/Lightbox";
-import { getEventById, categoryLabel, formatDate } from "@/lib/portfolio";
+import { getEventById, categoryLabel, formatDate, type PortfolioEvent } from "@/lib/portfolio";
 
 export const Route = createFileRoute("/portfolio/$eventId")({
-  loader: ({ params }) => {
+  loader: ({ params }): { event: PortfolioEvent } => {
     const event = getEventById(params.eventId);
     if (!event) throw notFound();
     return { event };
@@ -51,7 +51,7 @@ const PHOTO_SPANS = [
 ];
 
 function EventGalleryPage() {
-  const { event } = Route.useLoaderData();
+  const { event } = Route.useLoaderData() as { event: PortfolioEvent };
   const [active, setActive] = useState<number | null>(null);
 
   const images = event.photos.map((src) => ({ src, alt: event.name }));
