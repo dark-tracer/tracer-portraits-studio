@@ -41,6 +41,13 @@ export const Route = createRootRoute({
       { name: "author", content: "Traced in Light" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "Traced in Light — Portrait & Wedding Photography" },
+      { name: "twitter:title", content: "Traced in Light — Portrait & Wedding Photography" },
+      { name: "description", content: "A photography portfolio website showcasing creative work and converting visitors into leads." },
+      { property: "og:description", content: "A photography portfolio website showcasing creative work and converting visitors into leads." },
+      { name: "twitter:description", content: "A photography portfolio website showcasing creative work and converting visitors into leads." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/309941ba-39b9-4c15-998e-8b9e2bf2f297/id-preview-9731ad13--52d8a40a-f791-40f2-9206-20f134fd985a.lovable.app-1776884951224.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/309941ba-39b9-4c15-998e-8b9e2bf2f297/id-preview-9731ad13--52d8a40a-f791-40f2-9206-20f134fd985a.lovable.app-1776884951224.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
