@@ -51,7 +51,7 @@ const PHOTO_SPANS = [
 ];
 
 function EventGalleryPage() {
-  const { event } = Route.useLoaderData();
+  const { event } = Route.useLoaderData() as { event: PortfolioEvent };
   const [active, setActive] = useState<number | null>(null);
 
   const images = event.photos.map((src) => ({ src, alt: event.name }));
