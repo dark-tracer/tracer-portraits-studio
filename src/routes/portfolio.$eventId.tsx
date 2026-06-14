@@ -44,7 +44,10 @@ export const Route = createFileRoute("/portfolio/$eventId")({
 });
 
 function EventPage() {
-  const { event, photos } = Route.useLoaderData();
+  const { event, photos } = Route.useLoaderData() as {
+    event: { id: string; name: string; category: string; date: string; description: string };
+    photos: Array<{ id: string; url: string; alt: string }>;
+  };
   const [idx, setIdx] = useState<number | null>(null);
   const images = photos.map((p) => ({ src: p.url, alt: p.alt }));
 

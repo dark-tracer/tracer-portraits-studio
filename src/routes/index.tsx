@@ -66,7 +66,10 @@ function HeroCarousel({ images }: { images: { id: string; url: string; alt: stri
 }
 
 function Index() {
-  const { hero, recent } = Route.useLoaderData();
+  const { hero, recent } = Route.useLoaderData() as {
+    hero: Array<{ id: string; url: string; alt: string }>;
+    recent: Array<{ id: string; url: string; alt: string }>;
+  };
 
   return (
     <>
