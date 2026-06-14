@@ -53,7 +53,10 @@ function formatDate(iso: string) {
 }
 
 function PortfolioPage() {
-  const { events, recent } = Route.useLoaderData();
+  const { events, recent } = Route.useLoaderData() as {
+    events: Array<{ id: string; name: string; category: string; date: string; cover_url: string | null; photo_count: number }>;
+    recent: Array<{ id: string; url: string; alt: string; event_name: string | null; category: string | null }>;
+  };
   const [tab, setTab] = useState<Tab>("all");
   const [lbIdx, setLbIdx] = useState<number | null>(null);
 
