@@ -12,9 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PortfolioEventIdRouteImport } from './routes/portfolio.$eventId'
+import { Route as ApiPublicImgSplatRouteImport } from './routes/api/public/img.$'
 
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
@@ -29,6 +32,16 @@ const PortfolioRoute = PortfolioRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -46,65 +59,91 @@ const PortfolioEventIdRoute = PortfolioEventIdRouteImport.update({
   path: '/$eventId',
   getParentRoute: () => PortfolioRoute,
 } as any)
+const ApiPublicImgSplatRoute = ApiPublicImgSplatRouteImport.update({
+  id: '/api/public/img/$',
+  path: '/api/public/img/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/portfolio': typeof PortfolioRouteWithChildren
   '/services': typeof ServicesRoute
   '/portfolio/$eventId': typeof PortfolioEventIdRoute
+  '/api/public/img/$': typeof ApiPublicImgSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/portfolio': typeof PortfolioRouteWithChildren
   '/services': typeof ServicesRoute
   '/portfolio/$eventId': typeof PortfolioEventIdRoute
+  '/api/public/img/$': typeof ApiPublicImgSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/portfolio': typeof PortfolioRouteWithChildren
   '/services': typeof ServicesRoute
   '/portfolio/$eventId': typeof PortfolioEventIdRoute
+  '/api/public/img/$': typeof ApiPublicImgSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
+    | '/auth'
     | '/contact'
     | '/portfolio'
     | '/services'
     | '/portfolio/$eventId'
+    | '/api/public/img/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/admin'
+    | '/auth'
     | '/contact'
     | '/portfolio'
     | '/services'
     | '/portfolio/$eventId'
+    | '/api/public/img/$'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
+    | '/auth'
     | '/contact'
     | '/portfolio'
     | '/services'
     | '/portfolio/$eventId'
+    | '/api/public/img/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
+  AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   PortfolioRoute: typeof PortfolioRouteWithChildren
   ServicesRoute: typeof ServicesRoute
+  ApiPublicImgSplatRoute: typeof ApiPublicImgSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -130,6 +169,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -151,6 +204,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioEventIdRouteImport
       parentRoute: typeof PortfolioRoute
     }
+    '/api/public/img/$': {
+      id: '/api/public/img/$'
+      path: '/api/public/img/$'
+      fullPath: '/api/public/img/$'
+      preLoaderRoute: typeof ApiPublicImgSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -169,19 +229,13 @@ const PortfolioRouteWithChildren = PortfolioRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
+  AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   PortfolioRoute: PortfolioRouteWithChildren,
   ServicesRoute: ServicesRoute,
+  ApiPublicImgSplatRoute: ApiPublicImgSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

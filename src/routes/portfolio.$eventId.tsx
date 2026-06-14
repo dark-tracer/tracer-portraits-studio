@@ -1,133 +1,115 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { Lightbox } from "@/components/Lightbox";
-import { getEventById, categoryLabel, formatDate, type PortfolioEvent } from "@/lib/portfolio";
+import { ArrowLeft } from "lucide-react";
+import { getEvent } from "@/lib/portfolio-db.functions";
+
+const categoryLabel: Record<string, string> = {
+  portrait: "Portrait",
+  wedding: "Wedding",
+  event: "Event",
+};
 
 export const Route = createFileRoute("/portfolio/$eventId")({
-  loader: ({ params }): { event: PortfolioEvent } => {
-    const event = getEventById(params.eventId);
-    if (!event) throw notFound();
-    return { event };
+  loader: async ({ params }) => {
+    const data = await getEvent({ data: { id: params.eventId } });
+    if (!data) throw notFound();
+    return data;
   },
   head: ({ loaderData }) => ({
     meta: loaderData
       ? [
           { title: `${loaderData.event.name} — Traced in Light` },
-          { name: "description", content: loaderData.event.description },
-          { property: "og:title", content: `${loaderData.event.name} — Traced in Light` },
-          { property: "og:description", content: loaderData.event.description },
-          { property: "og:image", content: loaderData.event.coverImage },
-          { name: "twitter:image", content: loaderData.event.coverImage },
+          { name: "description", content: loaderData.event.description || loaderData.event.name },
         ]
       : [],
   }),
   notFoundComponent: () => (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
-      <h1 className="font-serif text-5xl text-foreground">Event not found</h1>
-      <p className="mt-4 text-muted-foreground">This gallery doesn’t exist or has been moved.</p>
-      <Link
-        to="/portfolio"
-        className="mt-8 inline-flex items-center gap-2 text-[11px] uppercase tracking-widest-xl text-foreground link-underline"
-      >
-        <ArrowLeft className="h-3.5 w-3.5" /> Back to Portfolio
-      </Link>
+    <div className="min-h-screen flex items-center justify-center pt-32 px-6">
+      <div className="text-center">
+        <h1 className="font-serif text-4xl mb-4">Event not found</h1>
+        <Link to="/portfolio" className="link-underline text-[11px] uppercase tracking-widest-xl">
+          Back to Portfolio
+        </Link>
+      </div>
     </div>
   ),
-  component: EventGalleryPage,
+  errorComponent: () => (
+    <div className="min-h-screen flex items-center justify-center pt-32 px-6">
+      <p>Couldn't load this event.</p>
+    </div>
+  ),
+  component: EventPage,
 });
 
-// Varied masonry-ish layout pattern
-const PHOTO_SPANS = [
-  "md:col-span-7 aspect-[4/3]",
-  "md:col-span-5 aspect-[3/4]",
-  "md:col-span-5 aspect-[4/5]",
-  "md:col-span-7 aspect-[16/10]",
-  "md:col-span-6 aspect-square",
-  "md:col-span-6 aspect-[4/5]",
-  "md:col-span-8 aspect-[16/9]",
-  "md:col-span-4 aspect-[3/4]",
-];
-
-function EventGalleryPage() {
-  const { event } = Route.useLoaderData() as { event: PortfolioEvent };
-  const [active, setActive] = useState<number | null>(null);
-
-  const images = event.photos.map((src) => ({ src, alt: event.name }));
+function EventPage() {
+  const { event, photos } = Route.useLoaderData() as {
+    event: { id: string; name: string; category: string; date: string; description: string };
+    photos: Array<{ id: string; url: string; alt: string }>;
+  };
+  const [idx, setIdx] = useState<number | null>(null);
+  const images = photos.map((p) => ({ src: p.url, alt: p.alt }));
 
   return (
-    <>
-      <section className="pt-32 md:pt-40 pb-10 px-6 md:px-12">
-        <div className="mx-auto max-w-[1600px]">
-          <Reveal>
-            <Link
-              to="/portfolio"
-              className="inline-flex items-center gap-2 text-[11px] uppercase tracking-widest-xl text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" /> Back to Portfolio
-            </Link>
-          </Reveal>
-          <Reveal delay={100}>
-            <div className="mt-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6 border-t border-border pt-10">
-              <div className="max-w-3xl">
-                <p className="text-[11px] uppercase tracking-widest-xl text-[var(--gold)] mb-4">
-                  {categoryLabel[event.category]} · {formatDate(event.date)}
-                </p>
-                <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl text-foreground leading-[1.05]">
-                  {event.name}
-                </h1>
-                <p className="mt-6 text-muted-foreground leading-relaxed max-w-xl">
-                  {event.description}
-                </p>
-              </div>
-              <span className="text-[11px] uppercase tracking-widest-xl text-muted-foreground">
-                {event.photos.length} frames
-              </span>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="px-6 md:px-12 pb-32">
-        <div className="mx-auto max-w-[1600px]">
-          <div className="grid grid-cols-12 gap-4 md:gap-8">
-            {event.photos.map((src, i) => {
-              const cls = PHOTO_SPANS[i % PHOTO_SPANS.length];
-              return (
-                <Reveal
-                  key={`${src}-${i}`}
-                  className={`col-span-12 ${cls.split(" ")[0]}`}
-                  delay={(i % 3) * 100}
-                >
-                  <button
-                    onClick={() => setActive(i)}
-                    className="block w-full image-hover"
-                    aria-label={`Open photo ${i + 1} of ${event.photos.length}`}
-                  >
-                    <img
-                      src={src}
-                      alt={`${event.name} — ${i + 1}`}
-                      loading="lazy"
-                      className={`w-full object-cover ${cls.split(" ").slice(1).join(" ")}`}
-                    />
-                  </button>
-                </Reveal>
-              );
+    <section className="pt-32 md:pt-40 pb-32 px-6 md:px-12">
+      <div className="mx-auto max-w-[1600px]">
+        <Reveal>
+          <Link
+            to="/portfolio"
+            className="inline-flex items-center gap-2 text-[11px] uppercase tracking-widest-xl text-muted-foreground hover:text-foreground mb-10"
+          >
+            <ArrowLeft className="h-3 w-3" /> Back to Portfolio
+          </Link>
+          <p className="text-[11px] uppercase tracking-widest-xl text-[var(--gold)] mb-3">
+            {categoryLabel[event.category]} ·{" "}
+            {new Date(event.date).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
             })}
-          </div>
+          </p>
+          <h1 className="font-serif text-5xl md:text-7xl text-foreground leading-[1.05]">
+            {event.name}
+          </h1>
+          {event.description && (
+            <p className="mt-6 max-w-2xl text-muted-foreground leading-relaxed">
+              {event.description}
+            </p>
+          )}
+        </Reveal>
+
+        <div className="mt-16 grid grid-cols-12 gap-4 md:gap-6">
+          {photos.map((p, i) => (
+            <Reveal
+              key={p.id}
+              className={i % 5 === 0 ? "col-span-12 md:col-span-8" : "col-span-12 md:col-span-4"}
+              delay={(i % 3) * 100}
+            >
+              <button onClick={() => setIdx(i)} className="block w-full image-hover">
+                <img
+                  src={p.url}
+                  alt={p.alt}
+                  loading="lazy"
+                  className="w-full aspect-[4/5] object-cover"
+                />
+              </button>
+            </Reveal>
+          ))}
         </div>
-      </section>
+
+        {photos.length === 0 && (
+          <p className="mt-16 text-muted-foreground">No photos uploaded for this event yet.</p>
+        )}
+      </div>
 
       <Lightbox
         images={images}
-        index={active}
-        onClose={() => setActive(null)}
-        onPrev={() =>
-          setActive((i) => (i === null ? null : (i - 1 + images.length) % images.length))
-        }
-        onNext={() => setActive((i) => (i === null ? null : (i + 1) % images.length))}
+        index={idx}
+        onClose={() => setIdx(null)}
+        onPrev={() => setIdx((i) => (i === null ? null : (i - 1 + photos.length) % photos.length))}
+        onNext={() => setIdx((i) => (i === null ? null : (i + 1) % photos.length))}
       />
-    </>
+    </section>
   );
 }
