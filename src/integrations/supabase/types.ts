@@ -14,16 +14,138 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      events: {
+        Row: {
+          category: Database["public"]["Enums"]["event_category"]
+          cover_url: string | null
+          created_at: string
+          date: string
+          description: string
+          id: string
+          name: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["event_category"]
+          cover_url?: string | null
+          created_at?: string
+          date?: string
+          description?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["event_category"]
+          cover_url?: string | null
+          created_at?: string
+          date?: string
+          description?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      hero_images: {
+        Row: {
+          alt: string
+          created_at: string
+          id: string
+          sort_order: number
+          storage_path: string
+          url: string
+        }
+        Insert: {
+          alt?: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          storage_path: string
+          url: string
+        }
+        Update: {
+          alt?: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          storage_path?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      photos: {
+        Row: {
+          alt: string
+          created_at: string
+          event_id: string | null
+          id: string
+          sort_order: number
+          storage_path: string
+          url: string
+        }
+        Insert: {
+          alt?: string
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          sort_order?: number
+          storage_path: string
+          url: string
+        }
+        Update: {
+          alt?: string
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          sort_order?: number
+          storage_path?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photos_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      event_category: "portrait" | "wedding" | "event"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +272,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      event_category: ["portrait", "wedding", "event"],
+    },
   },
 } as const
