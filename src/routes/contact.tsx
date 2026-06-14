@@ -44,25 +44,25 @@ function ContactPage() {
           <Reveal delay={200}>
             <div className="mt-16 space-y-6 text-sm">
               <a
-                href="mailto:hello@bytracer.studio"
+                href="mailto:bernieamponsah2@gmail.com"
                 className="flex items-start gap-4 link-underline w-fit"
               >
                 <Mail className="h-4 w-4 mt-0.5 text-[var(--gold)]" />
-                <span>hello@bytracer.studio</span>
+                <span>bernieamponsah2@gmail.com</span>
               </a>
               <a
-                href="https://instagram.com"
+                href="https://instagram.com/trac.erphotography"
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-start gap-4 link-underline w-fit"
               >
                 <Instagram className="h-4 w-4 mt-0.5 text-[var(--gold)]" />
-                <span>@bytracer</span>
+                <span>@trac.erphotography</span>
               </a>
               <div className="flex items-start gap-4">
                 <MapPin className="h-4 w-4 mt-0.5 text-[var(--gold)]" />
                 <span className="text-foreground/80">
-                  Based in Lisbon — available worldwide
+                  Based in Accra, Ghana — available worldwide
                 </span>
               </div>
             </div>
