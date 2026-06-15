@@ -175,3 +175,195 @@ export const deleteHeroImage = createServerFn({ method: "POST" })
     await sb.from("hero_images").delete().eq("id", data.id);
     return { ok: true };
   });
+
+// ============ UPDATE EVENT (category, name, date, description) ============
+export const updateEvent = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        name: z.string().min(1).max(120),
+        category: z.enum(["portrait", "wedding", "event"]),
+        date: z.string().min(1),
+        description: z.string().max(2000).default(""),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { id, ...rest } = data;
+    const { data: row, error } = await sb.from("events").update(rest).eq("id", id).select().single();
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
+// ============ ABOUT ============
+export const updateAbout = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        headline: z.string().min(1).max(300),
+        body: z.string().max(5000).default(""),
+        weddings_captured: z.string().max(20).default("200+"),
+        years_behind_lens: z.string().max(20).default("9 yrs"),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { id, ...rest } = data;
+    const { error } = await sb
+      .from("about_content")
+      .update({ ...rest, updated_at: new Date().toISOString() })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const uploadAboutImage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => {
+    if (!(d instanceof FormData)) throw new Error("FormData required");
+    const id = d.get("id");
+    const file = d.get("file");
+    if (typeof id !== "string" || !(file instanceof File))
+      throw new Error("Missing id or file");
+    return { id, file };
+  })
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const path = makePath(data.file.name, "about");
+    const buf = await data.file.arrayBuffer();
+    const { error: upErr } = await sb.storage
+      .from("portfolio")
+      .upload(path, buf, { contentType: data.file.type || "image/jpeg", upsert: false });
+    if (upErr) throw new Error(upErr.message);
+    const url = `/api/public/img/${path}`;
+    // remove previous file if any
+    const { data: prev } = await sb
+      .from("about_content")
+      .select("image_storage_path")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (prev?.image_storage_path) {
+      await sb.storage.from("portfolio").remove([prev.image_storage_path]);
+    }
+    const { error } = await sb
+      .from("about_content")
+      .update({ image_storage_path: path, image_url: url, updated_at: new Date().toISOString() })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { url };
+  });
+
+// ============ PACKAGES ============
+const packageSchema = z.object({
+  title: z.string().min(1).max(120),
+  starting: z.string().max(120).default(""),
+  description: z.string().max(2000).default(""),
+  includes: z.array(z.string().max(200)).default([]),
+  featured: z.boolean().default(false),
+  sort_order: z.number().int().default(0),
+});
+
+export const createPackage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => packageSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { data: row, error } = await sb.from("packages").insert(data).select().single();
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
+export const updatePackage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => packageSchema.extend({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { id, ...rest } = data;
+    const { error } = await sb.from("packages").update(rest).eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deletePackage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { error } = await sb.from("packages").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// ============ TESTIMONIALS ============
+const testimonialSchema = z.object({
+  quote: z.string().min(1).max(2000),
+  attribution: z.string().max(200).default(""),
+  sort_order: z.number().int().default(0),
+});
+
+export const createTestimonial = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => testimonialSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { data: row, error } = await sb.from("testimonials").insert(data).select().single();
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
+export const updateTestimonial = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => testimonialSchema.extend({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { id, ...rest } = data;
+    const { error } = await sb.from("testimonials").update(rest).eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteTestimonial = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { error } = await sb.from("testimonials").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// ============ ADMIN LIST READS (consistent with portfolio-db public reads) ============
+export const adminListAbout = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { data } = await sb
+      .from("about_content")
+      .select("*")
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return data;
+  });
+
+export const adminListPackages = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { data } = await sb.from("packages").select("*").order("sort_order", { ascending: true });
+    return data ?? [];
+  });
+
+export const adminListTestimonials = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { data } = await sb.from("testimonials").select("*").order("sort_order", { ascending: true });
+    return data ?? [];
+  });
