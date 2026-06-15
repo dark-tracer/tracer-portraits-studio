@@ -44,20 +44,20 @@ function ContactPage() {
           <Reveal delay={200}>
             <div className="mt-16 space-y-6 text-sm">
               <a
-                href="mailto:bernieamponsah2@gmail.com"
-                className="flex items-start gap-4 link-underline w-fit"
-              >
-                <Mail className="h-4 w-4 mt-0.5 text-[var(--gold)]" />
-                <span>bernieamponsah2@gmail.com</span>
-              </a>
-              <a
-                href="https://instagram.com/trac.erphotography"
+                href="https://www.instagram.com/trac.erphotography?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-start gap-4 link-underline w-fit"
               >
                 <Instagram className="h-4 w-4 mt-0.5 text-[var(--gold)]" />
                 <span>@trac.erphotography</span>
+              </a>
+              <a
+                href="mailto:bernieamponsah2@gmail.com"
+                className="flex items-start gap-4 link-underline w-fit"
+              >
+                <Mail className="h-4 w-4 mt-0.5 text-[var(--gold)]" />
+                <span>bernieamponsah2@gmail.com</span>
               </a>
               <div className="flex items-start gap-4">
                 <MapPin className="h-4 w-4 mt-0.5 text-[var(--gold)]" />
