@@ -40,8 +40,7 @@ const SPANS = [
 
 function matchesTab(cat: string, tab: Tab) {
   if (tab === "all") return true;
-  if (tab === "portrait") return cat === "portrait";
-  return cat === "wedding" || cat === "event";
+  return cat === tab;
 }
 
 function formatDate(iso: string) {
