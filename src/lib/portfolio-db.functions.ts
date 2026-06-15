@@ -97,3 +97,65 @@ export const listHero = createServerFn({ method: "GET" }).handler(async (): Prom
     .order("created_at", { ascending: true });
   return (data ?? []) as HeroRow[];
 });
+
+// ============ ABOUT / PACKAGES / TESTIMONIALS (public reads) ============
+export type AboutContent = {
+  id: string;
+  image_url: string | null;
+  headline: string;
+  body: string;
+  weddings_captured: string;
+  years_behind_lens: string;
+};
+
+export const getAbout = createServerFn({ method: "GET" }).handler(
+  async (): Promise<AboutContent | null> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("about_content")
+      .select("id, image_url, headline, body, weddings_captured, years_behind_lens")
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return (data as AboutContent | null) ?? null;
+  },
+);
+
+export type PackageRow = {
+  id: string;
+  title: string;
+  starting: string;
+  description: string;
+  includes: string[];
+  featured: boolean;
+  sort_order: number;
+};
+
+export const listPackages = createServerFn({ method: "GET" }).handler(
+  async (): Promise<PackageRow[]> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("packages")
+      .select("id, title, starting, description, includes, featured, sort_order")
+      .order("sort_order", { ascending: true });
+    return (data ?? []) as PackageRow[];
+  },
+);
+
+export type TestimonialRow = {
+  id: string;
+  quote: string;
+  attribution: string;
+  sort_order: number;
+};
+
+export const listTestimonials = createServerFn({ method: "GET" }).handler(
+  async (): Promise<TestimonialRow[]> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("testimonials")
+      .select("id, quote, attribution, sort_order")
+      .order("sort_order", { ascending: true });
+    return (data ?? []) as TestimonialRow[];
+  },
+);
