@@ -27,18 +27,18 @@ export function Footer() {
             Elsewhere
           </span>
           <a
-            href="https://instagram.com"
+            href="https://www.instagram.com/trac.erphotography?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
             target="_blank"
             rel="noreferrer"
             className="link-underline w-fit inline-flex items-center gap-2"
           >
-            <Instagram className="h-4 w-4" />@tracedinlight
+            <Instagram className="h-4 w-4" />@trac.erphotography
           </a>
           <a
-            href="mailto:hello@tracedinlight.studio"
+            href="mailto:bernieamponsah2@gmail.com"
             className="link-underline w-fit inline-flex items-center gap-2"
           >
-            <Mail className="h-4 w-4" />hello@tracedinlight.studio
+            <Mail className="h-4 w-4" />bernieamponsah2@gmail.com
           </a>
         </div>
       </div>

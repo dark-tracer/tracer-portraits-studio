@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      about_content: {
+        Row: {
+          body: string
+          headline: string
+          id: string
+          image_storage_path: string | null
+          image_url: string | null
+          updated_at: string
+          weddings_captured: string
+          years_behind_lens: string
+        }
+        Insert: {
+          body?: string
+          headline?: string
+          id?: string
+          image_storage_path?: string | null
+          image_url?: string | null
+          updated_at?: string
+          weddings_captured?: string
+          years_behind_lens?: string
+        }
+        Update: {
+          body?: string
+          headline?: string
+          id?: string
+          image_storage_path?: string | null
+          image_url?: string | null
+          updated_at?: string
+          weddings_captured?: string
+          years_behind_lens?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           category: Database["public"]["Enums"]["event_category"]
@@ -71,6 +104,39 @@ export type Database = {
         }
         Relationships: []
       }
+      packages: {
+        Row: {
+          created_at: string
+          description: string
+          featured: boolean
+          id: string
+          includes: string[]
+          sort_order: number
+          starting: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          featured?: boolean
+          id?: string
+          includes?: string[]
+          sort_order?: number
+          starting?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          featured?: boolean
+          id?: string
+          includes?: string[]
+          sort_order?: number
+          starting?: string
+          title?: string
+        }
+        Relationships: []
+      }
       photos: {
         Row: {
           alt: string
@@ -108,6 +174,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      testimonials: {
+        Row: {
+          attribution: string
+          created_at: string
+          id: string
+          quote: string
+          sort_order: number
+        }
+        Insert: {
+          attribution?: string
+          created_at?: string
+          id?: string
+          quote: string
+          sort_order?: number
+        }
+        Update: {
+          attribution?: string
+          created_at?: string
+          id?: string
+          quote?: string
+          sort_order?: number
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {

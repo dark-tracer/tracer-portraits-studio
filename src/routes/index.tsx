@@ -36,13 +36,13 @@ function HeroCarousel({ images }: { images: { id: string; url: string; alt: stri
     );
   }
   return (
-    <>
+    <div className="absolute inset-0 bg-foreground">
       {images.map((img, idx) => (
         <img
           key={img.id}
           src={img.url}
           alt={img.alt}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1800ms] ${
+          className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[1800ms] ${
             idx === i ? "opacity-100" : "opacity-0"
           }`}
         />
@@ -61,7 +61,7 @@ function HeroCarousel({ images }: { images: { id: string; url: string; alt: stri
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 }
 

@@ -4,7 +4,7 @@ import { Reveal } from "@/components/Reveal";
 import { Lightbox } from "@/components/Lightbox";
 import { listEvents, listRecentPhotos } from "@/lib/portfolio-db.functions";
 
-type Tab = "all" | "portrait" | "wedding-event";
+type Tab = "all" | "portrait" | "wedding" | "event";
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
@@ -40,8 +40,7 @@ const SPANS = [
 
 function matchesTab(cat: string, tab: Tab) {
   if (tab === "all") return true;
-  if (tab === "portrait") return cat === "portrait";
-  return cat === "wedding" || cat === "event";
+  return cat === tab;
 }
 
 function formatDate(iso: string) {
@@ -64,7 +63,8 @@ function PortfolioPage() {
   const tabs: { key: Tab; label: string }[] = [
     { key: "all", label: "All Work" },
     { key: "portrait", label: "Portraits" },
-    { key: "wedding-event", label: "Weddings & Events" },
+    { key: "wedding", label: "Weddings" },
+    { key: "event", label: "Events" },
   ];
   const lbImages = recent.map((p) => ({ src: p.url, alt: p.event_name ?? "" }));
 
