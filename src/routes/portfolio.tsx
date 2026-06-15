@@ -4,7 +4,7 @@ import { Reveal } from "@/components/Reveal";
 import { Lightbox } from "@/components/Lightbox";
 import { listEvents, listRecentPhotos } from "@/lib/portfolio-db.functions";
 
-type Tab = "all" | "portrait" | "wedding-event";
+type Tab = "all" | "portrait" | "wedding" | "event";
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
