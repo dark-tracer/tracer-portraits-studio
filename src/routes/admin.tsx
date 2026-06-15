@@ -740,7 +740,7 @@ function PackageForm({
   const [title, setTitle] = useState(initial?.title ?? "");
   const [starting, setStarting] = useState(initial?.starting ?? "");
   const [description, setDescription] = useState(initial?.description ?? "");
-  const [includes, setIncludes] = useState((initial?.includes ?? []).join("\n"));
+  const [includes, setIncludes] = useState<string>(((initial?.includes ?? []) as string[]).join("\n"));
   const [featured, setFeatured] = useState<boolean>(initial?.featured ?? false);
   const [sortOrder, setSortOrder] = useState<number>(initial?.sort_order ?? 0);
   const [busy, setBusy] = useState(false);
