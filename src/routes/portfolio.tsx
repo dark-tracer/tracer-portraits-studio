@@ -63,7 +63,8 @@ function PortfolioPage() {
   const tabs: { key: Tab; label: string }[] = [
     { key: "all", label: "All Work" },
     { key: "portrait", label: "Portraits" },
-    { key: "wedding-event", label: "Weddings & Events" },
+    { key: "wedding", label: "Weddings" },
+    { key: "event", label: "Events" },
   ];
   const lbImages = recent.map((p) => ({ src: p.url, alt: p.event_name ?? "" }));
 
