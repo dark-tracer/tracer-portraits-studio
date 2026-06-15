@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/Reveal";
-import { getAbout } from "@/lib/portfolio-db.functions";
+import { getAbout, type AboutContent } from "@/lib/portfolio-db.functions";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
