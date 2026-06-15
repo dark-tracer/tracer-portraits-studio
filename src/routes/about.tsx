@@ -22,7 +22,7 @@ export const Route = createFileRoute("/about")({
 });
 
 function AboutPage() {
-  const about = Route.useLoaderData();
+  const about = Route.useLoaderData() as AboutContent | null;
   const headline =
     about?.headline ?? "I make pictures the way I'd want to be remembered.";
   const body = about?.body ?? "";
