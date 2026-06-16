@@ -66,8 +66,15 @@ export function Lightbox({ images, index, onClose, onPrev, onNext }: Props) {
         onClick={(e) => e.stopPropagation()}
         className="max-h-[88vh] max-w-[88vw] object-contain animate-scale-in"
       />
-      <div className="absolute bottom-6 left-0 right-0 text-center text-[11px] uppercase tracking-widest-xl text-background/60">
-        {index + 1} / {images.length}
+      <div className="absolute bottom-6 left-0 right-0 px-6 text-center space-y-2">
+        {img.alt && (
+          <p className="text-sm md:text-base text-background/85 max-w-2xl mx-auto leading-relaxed">
+            {img.alt}
+          </p>
+        )}
+        <p className="text-[11px] uppercase tracking-widest-xl text-background/60">
+          {index + 1} / {images.length}
+        </p>
       </div>
     </div>
   );
