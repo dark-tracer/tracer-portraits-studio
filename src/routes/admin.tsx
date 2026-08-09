@@ -212,14 +212,14 @@ function EventsTab() {
             >
               Manage Photos
             </button>
-            <button
+            <button aria-label="Edit"
               onClick={() => setEditing(e)}
               className="text-foreground/70 hover:text-foreground"
               title="Edit event"
             >
               <Pencil className="h-4 w-4" />
             </button>
-            <button
+            <button aria-label="Delete"
               onClick={async () => {
                 if (!confirm(`Delete "${e.name}" and all its photos?`)) return;
                 await del({ data: { id: e.id } });
@@ -413,7 +413,7 @@ function EventPhotosModal({ eventId, onClose }: { eventId: string; onClose: () =
           {data?.photos?.map((p: any) => (
             <div key={p.id} className="relative group">
               <img src={p.url} alt={p.alt} className="w-full aspect-square object-cover" />
-              <button
+              <button aria-label="Delete"
                 onClick={async () => {
                   await removePhoto({ data: { id: p.id } });
                   refresh();
@@ -480,7 +480,7 @@ function HeroTab() {
         {hero.map((h) => (
           <div key={h.id} className="relative group">
             <img src={h.url} alt={h.alt} className="w-full aspect-[4/3] object-cover" />
-            <button
+            <button aria-label="Delete"
               onClick={async () => {
                 await remove({ data: { id: h.id } });
                 refresh();
@@ -703,10 +703,10 @@ function PackagesTab() {
                 <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{p.description}</p>
               </div>
               <div className="flex items-center gap-3">
-                <button onClick={() => setEditing(p)} className="text-foreground/70 hover:text-foreground">
+                <button aria-label="Edit" onClick={() => setEditing(p)} className="text-foreground/70 hover:text-foreground">
                   <Pencil className="h-4 w-4" />
                 </button>
-                <button
+                <button aria-label="Delete"
                   onClick={async () => {
                     if (!confirm(`Delete "${p.title}"?`)) return;
                     await remove({ data: { id: p.id } });
@@ -905,10 +905,10 @@ function TestimonialsTab() {
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <button onClick={() => setEditing(t)} className="text-foreground/70 hover:text-foreground">
+                <button aria-label="Edit" onClick={() => setEditing(t)} className="text-foreground/70 hover:text-foreground">
                   <Pencil className="h-4 w-4" />
                 </button>
-                <button
+                <button aria-label="Delete"
                   onClick={async () => {
                     if (!confirm("Delete this testimonial?")) return;
                     await remove({ data: { id: t.id } });
