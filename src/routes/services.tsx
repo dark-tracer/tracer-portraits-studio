@@ -153,6 +153,9 @@ function ServicesPage() {
           </div>
         </section>
       )}
+
+      <FAQ />
     </>
+
   );
 }
