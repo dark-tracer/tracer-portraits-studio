@@ -12,9 +12,17 @@ export const Route = createFileRoute("/portfolio")({
       { title: "Portfolio — Traced in Light" },
       {
         name: "description",
-        content: "Portrait, wedding, and event galleries by Traced in Light.",
+        content: "Portrait, wedding, and event galleries by Traced in Light, Accra, Ghana.",
       },
+      { property: "og:title", content: "Portfolio — Traced in Light" },
+      {
+        property: "og:description",
+        content:
+          "Browse portrait, wedding, and event galleries — full stories from real sessions in Accra and beyond.",
+      },
+      { property: "og:url", content: "https://tracer-portraits-studio.lovable.app/portfolio" },
     ],
+    links: [{ rel: "canonical", href: "https://tracer-portraits-studio.lovable.app/portfolio" }],
   }),
   loader: async () => {
     const [events, recent] = await Promise.all([listEvents(), listRecentPhotos()]);
