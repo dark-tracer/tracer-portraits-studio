@@ -85,7 +85,8 @@ function Index() {
           </Reveal>
           <Reveal delay={400}>
             <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl text-background font-light leading-none">
-              Traced in Light
+              <span className="sr-only">Traced in Light — Portrait &amp; Wedding Photography</span>
+              <span aria-hidden="true">Traced in Light</span>
             </h1>
           </Reveal>
           <Reveal delay={700}>
