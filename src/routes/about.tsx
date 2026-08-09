@@ -6,10 +6,20 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "About — Traced in Light" },
-      { name: "description", content: "Meet the photographer behind Traced in Light." },
+      {
+        name: "description",
+        content:
+          "Meet the photographer behind Traced in Light — an Accra-based studio shooting portraits, weddings, and events.",
+      },
       { property: "og:title", content: "About — Traced in Light" },
-      { property: "og:description", content: "Meet the photographer behind Traced in Light." },
+      {
+        property: "og:description",
+        content:
+          "Meet the photographer behind Traced in Light — an Accra-based studio shooting portraits, weddings, and events.",
+      },
+      { property: "og:url", content: "https://tracer-portraits-studio.lovable.app/about" },
     ],
+    links: [{ rel: "canonical", href: "https://tracer-portraits-studio.lovable.app/about" }],
   }),
   loader: () => getAbout(),
   errorComponent: () => (
