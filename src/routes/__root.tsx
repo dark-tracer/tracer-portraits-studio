@@ -88,6 +88,8 @@ function RootComponent() {
         <Outlet />
       </main>
       <Footer />
+      <WhatsAppButton />
     </>
+
   );
 }
