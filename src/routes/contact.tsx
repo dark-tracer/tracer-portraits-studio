@@ -7,10 +7,12 @@ export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "Contact — Traced in Light" },
-      { name: "description", content: "Begin an inquiry with Traced in Light for portrait, wedding, or event photography." },
+      { name: "description", content: "Begin an inquiry with Traced in Light for portrait, wedding, or event photography in Accra, Ghana." },
       { property: "og:title", content: "Contact — Traced in Light" },
-      { property: "og:description", content: "Begin an inquiry for portrait, wedding, or event photography." },
+      { property: "og:description", content: "Begin an inquiry for portrait, wedding, or event photography in Accra, Ghana." },
+      { property: "og:url", content: "https://tracer-portraits-studio.lovable.app/contact" },
     ],
+    links: [{ rel: "canonical", href: "https://tracer-portraits-studio.lovable.app/contact" }],
   }),
   component: ContactPage,
 });
