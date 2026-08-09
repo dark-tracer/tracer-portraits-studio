@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/Reveal";
+import { FAQ } from "@/components/FAQ";
 import {
   listPackages,
   listTestimonials,
