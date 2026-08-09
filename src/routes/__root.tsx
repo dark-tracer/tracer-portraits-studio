@@ -37,18 +37,60 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Traced in Light is a portrait and wedding photography studio capturing quiet, intentional images that endure.",
+          "Traced in Light is a portrait and wedding photography studio in Accra, Ghana, capturing quiet, intentional images that endure.",
       },
       { name: "author", content: "Traced in Light" },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Traced in Light" },
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:title", content: "Traced in Light — Portrait & Wedding Photography" },
       { name: "twitter:title", content: "Traced in Light — Portrait & Wedding Photography" },
-      { name: "description", content: "A photography portfolio website showcasing creative work and converting visitors into leads." },
-      { property: "og:description", content: "A photography portfolio website showcasing creative work and converting visitors into leads." },
-      { name: "twitter:description", content: "A photography portfolio website showcasing creative work and converting visitors into leads." },
+      {
+        property: "og:description",
+        content:
+          "Unhurried, intentional portrait and wedding photography from Accra, Ghana — images made to be lived with, not just looked at.",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Unhurried, intentional portrait and wedding photography from Accra, Ghana — images made to be lived with, not just looked at.",
+      },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/309941ba-39b9-4c15-998e-8b9e2bf2f297/id-preview-9731ad13--52d8a40a-f791-40f2-9206-20f134fd985a.lovable.app-1776884951224.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/309941ba-39b9-4c15-998e-8b9e2bf2f297/id-preview-9731ad13--52d8a40a-f791-40f2-9206-20f134fd985a.lovable.app-1776884951224.png" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "@id": "https://tracer-portraits-studio.lovable.app/#website",
+              name: "Traced in Light",
+              url: "https://tracer-portraits-studio.lovable.app/",
+              inLanguage: "en",
+            },
+            {
+              "@type": "LocalBusiness",
+              "@id": "https://tracer-portraits-studio.lovable.app/#business",
+              name: "Traced in Light",
+              description:
+                "Portrait, wedding, and event photography studio based in Accra, Ghana.",
+              url: "https://tracer-portraits-studio.lovable.app/",
+              email: "bernieamponsah2@gmail.com",
+              telephone: "+233502605560",
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: "Accra",
+                addressCountry: "GH",
+              },
+              areaServed: "Ghana",
+              sameAs: ["https://www.instagram.com/trac.erphotography"],
+            },
+          ],
+        }),
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
