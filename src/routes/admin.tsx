@@ -287,7 +287,7 @@ function EventForm({
     >
       <div className="flex justify-between items-center">
         <h3 className="font-serif text-xl">{initial ? "Edit event" : "New event"}</h3>
-        <button type="button" onClick={onClose}>
+        <button aria-label="Close" type="button" onClick={onClose}>
           <X className="h-4 w-4" />
         </button>
       </div>
@@ -389,7 +389,7 @@ function EventPhotosModal({ eventId, onClose }: { eventId: string; onClose: () =
               {data?.photos?.length ?? 0} photos · {data?.event?.category}
             </p>
           </div>
-          <button onClick={onClose}>
+          <button aria-label="Close" onClick={onClose}>
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -771,7 +771,7 @@ function PackageForm({
     >
       <div className="flex justify-between items-center">
         <h3 className="font-serif text-xl">{initial ? "Edit package" : "New package"}</h3>
-        <button type="button" onClick={onClose}><X className="h-4 w-4" /></button>
+        <button aria-label="Close" type="button" onClick={onClose}><X className="h-4 w-4" /></button>
       </div>
       <input
         required
@@ -960,7 +960,7 @@ function TestimonialForm({
     >
       <div className="flex justify-between items-center">
         <h3 className="font-serif text-xl">{initial ? "Edit testimonial" : "New testimonial"}</h3>
-        <button type="button" onClick={onClose}><X className="h-4 w-4" /></button>
+        <button aria-label="Close" type="button" onClick={onClose}><X className="h-4 w-4" /></button>
       </div>
       <textarea
         required
