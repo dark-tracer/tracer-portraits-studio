@@ -352,6 +352,7 @@ function EventPhotosModal({ eventId, onClose }: { eventId: string; onClose: () =
   const removePhoto = useServerFn(deletePhoto);
   const [data, setData] = useState<any>(null);
   const [busy, setBusy] = useState(false);
+  const [alt, setAlt] = useState("");
 
   const refresh = useCallback(() => {
     fetchEvent({ data: { id: eventId } }).then(setData);
@@ -368,6 +369,7 @@ function EventPhotosModal({ eventId, onClose }: { eventId: string; onClose: () =
         const fd = new FormData();
         fd.append("eventId", eventId);
         fd.append("file", f);
+        fd.append("alt", alt);
         await upload({ data: fd });
       }
       refresh();
@@ -393,6 +395,18 @@ function EventPhotosModal({ eventId, onClose }: { eventId: string; onClose: () =
             <X className="h-5 w-5" />
           </button>
         </div>
+
+        <label className="block mb-4">
+          <span className="text-[11px] uppercase tracking-widest-xl text-muted-foreground">
+            Photo description (alt text)
+          </span>
+          <input
+            value={alt}
+            onChange={(e) => setAlt(e.target.value)}
+            placeholder="e.g. Bride laughing in golden hour light, Accra"
+            className="mt-2 block w-full bg-transparent border-b border-border px-0 py-2 focus:outline-none focus:border-foreground"
+          />
+        </label>
 
         <label className="block border border-dashed border-border p-8 text-center cursor-pointer hover:bg-muted/30 mb-6">
           <Upload className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
@@ -437,6 +451,7 @@ function HeroTab() {
   const remove = useServerFn(deleteHeroImage);
   const [hero, setHero] = useState<any[]>([]);
   const [busy, setBusy] = useState(false);
+  const [alt, setAlt] = useState("");
 
   const refresh = useCallback(() => list().then(setHero), [list]);
   useEffect(() => {
@@ -450,6 +465,7 @@ function HeroTab() {
       for (const f of Array.from(files)) {
         const fd = new FormData();
         fd.append("file", f);
+        fd.append("alt", alt);
         await upload({ data: fd });
       }
       refresh();
@@ -461,6 +477,18 @@ function HeroTab() {
   return (
     <div>
       <h2 className="font-serif text-2xl mb-6">Hero Carousel ({hero.length})</h2>
+      <label className="block mb-4">
+        <span className="text-[11px] uppercase tracking-widest-xl text-muted-foreground">
+          Image description (alt text)
+        </span>
+        <input
+          value={alt}
+          onChange={(e) => setAlt(e.target.value)}
+          placeholder="e.g. Couple walking along the Accra shoreline at dusk"
+          className="mt-2 block w-full bg-transparent border-b border-border px-0 py-2 focus:outline-none focus:border-foreground"
+        />
+      </label>
+
       <label className="block border border-dashed border-border p-10 text-center cursor-pointer hover:bg-muted/30 mb-8">
         <Upload className="h-6 w-6 mx-auto mb-3 text-muted-foreground" />
         <span className="text-[11px] uppercase tracking-widest-xl">
