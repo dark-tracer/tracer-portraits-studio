@@ -97,9 +97,10 @@ export const uploadEventPhoto = createServerFn({ method: "POST" })
     if (!(d instanceof FormData)) throw new Error("FormData required");
     const eventId = d.get("eventId");
     const file = d.get("file");
+    const alt = d.get("alt");
     if (typeof eventId !== "string" || !(file instanceof File))
       throw new Error("Missing eventId or file");
-    return { eventId, file };
+    return { eventId, file, alt: typeof alt === "string" ? alt.trim() : "" };
   })
   .handler(async ({ data, context }) => {
     const sb = await requireAdmin(context.userId, (context.claims as any).email);
@@ -112,7 +113,12 @@ export const uploadEventPhoto = createServerFn({ method: "POST" })
     const url = `/api/public/img/${path}`;
     const { data: row, error } = await sb
       .from("photos")
-      .insert({ event_id: data.eventId, storage_path: path, url, alt: data.file.name })
+      .insert({
+        event_id: data.eventId,
+        storage_path: path,
+        url,
+        alt: data.alt || "Photograph by Traced in Light",
+      })
       .select()
       .single();
     if (error) throw new Error(error.message);
@@ -140,8 +146,9 @@ export const uploadHeroImage = createServerFn({ method: "POST" })
   .inputValidator((d) => {
     if (!(d instanceof FormData)) throw new Error("FormData required");
     const file = d.get("file");
+    const alt = d.get("alt");
     if (!(file instanceof File)) throw new Error("Missing file");
-    return { file };
+    return { file, alt: typeof alt === "string" ? alt.trim() : "" };
   })
   .handler(async ({ data, context }) => {
     const sb = await requireAdmin(context.userId, (context.claims as any).email);
@@ -154,7 +161,11 @@ export const uploadHeroImage = createServerFn({ method: "POST" })
     const url = `/api/public/img/${path}`;
     const { data: row, error } = await sb
       .from("hero_images")
-      .insert({ storage_path: path, url, alt: data.file.name })
+      .insert({
+        storage_path: path,
+        url,
+        alt: data.alt || "Portrait and wedding photography by Traced in Light",
+      })
       .select()
       .single();
     if (error) throw new Error(error.message);

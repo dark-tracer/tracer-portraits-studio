@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/Reveal";
-import { FAQ } from "@/components/FAQ";
+import { FAQ, faqs } from "@/components/FAQ";
 import {
   listPackages,
   listTestimonials,
@@ -8,15 +8,64 @@ import {
   type TestimonialRow,
 } from "@/lib/portfolio-db.functions";
 
+const SITE = "https://tracer-portraits-studio.lovable.app";
+
 export const Route = createFileRoute("/services")({
-  head: () => ({
+  head: ({ loaderData }) => ({
     meta: [
       { title: "Services & Investment — Traced in Light" },
       {
         name: "description",
         content:
-          "Portrait sessions, wedding coverage, and event photography by Traced in Light. Inquire for pricing.",
+          "Portrait sessions, wedding coverage, and event photography by Traced in Light in Accra, Ghana. Inquire for pricing.",
       },
+      { property: "og:title", content: "Services & Investment — Traced in Light" },
+      {
+        property: "og:description",
+        content:
+          "Portrait sessions, wedding coverage, and event photography collections — shaped around your day and your story.",
+      },
+      { property: "og:url", content: `${SITE}/services` },
+    ],
+    links: [{ rel: "canonical", href: `${SITE}/services` }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
+      },
+      ...(loaderData?.packages?.length
+        ? [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify(
+                loaderData.packages.map((p: PackageRow) => ({
+                  "@context": "https://schema.org",
+                  "@type": "Service",
+                  name: p.title,
+                  description: p.description,
+                  areaServed: "Ghana",
+                  provider: {
+                    "@type": "LocalBusiness",
+                    name: "Traced in Light",
+                    address: {
+                      "@type": "PostalAddress",
+                      addressLocality: "Accra",
+                      addressCountry: "GH",
+                    },
+                  },
+                })),
+              ),
+            },
+          ]
+        : []),
     ],
   }),
   loader: async () => {

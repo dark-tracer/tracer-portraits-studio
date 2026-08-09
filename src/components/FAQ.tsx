@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Reveal } from "@/components/Reveal";
 import { Plus } from "lucide-react";
 
-const faqs = [
+export const faqs = [
   {
     q: "How far in advance should I book?",
     a: "I recommend booking at least 3 months in advance for portrait sessions and 6–12 months for weddings and events, especially during peak season.",

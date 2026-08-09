@@ -212,14 +212,14 @@ function EventsTab() {
             >
               Manage Photos
             </button>
-            <button
+            <button aria-label="Edit"
               onClick={() => setEditing(e)}
               className="text-foreground/70 hover:text-foreground"
               title="Edit event"
             >
               <Pencil className="h-4 w-4" />
             </button>
-            <button
+            <button aria-label="Delete"
               onClick={async () => {
                 if (!confirm(`Delete "${e.name}" and all its photos?`)) return;
                 await del({ data: { id: e.id } });
@@ -287,7 +287,7 @@ function EventForm({
     >
       <div className="flex justify-between items-center">
         <h3 className="font-serif text-xl">{initial ? "Edit event" : "New event"}</h3>
-        <button type="button" onClick={onClose}>
+        <button aria-label="Close" type="button" onClick={onClose}>
           <X className="h-4 w-4" />
         </button>
       </div>
@@ -352,6 +352,7 @@ function EventPhotosModal({ eventId, onClose }: { eventId: string; onClose: () =
   const removePhoto = useServerFn(deletePhoto);
   const [data, setData] = useState<any>(null);
   const [busy, setBusy] = useState(false);
+  const [alt, setAlt] = useState("");
 
   const refresh = useCallback(() => {
     fetchEvent({ data: { id: eventId } }).then(setData);
@@ -368,6 +369,7 @@ function EventPhotosModal({ eventId, onClose }: { eventId: string; onClose: () =
         const fd = new FormData();
         fd.append("eventId", eventId);
         fd.append("file", f);
+        fd.append("alt", alt);
         await upload({ data: fd });
       }
       refresh();
@@ -389,10 +391,22 @@ function EventPhotosModal({ eventId, onClose }: { eventId: string; onClose: () =
               {data?.photos?.length ?? 0} photos · {data?.event?.category}
             </p>
           </div>
-          <button onClick={onClose}>
+          <button aria-label="Close" onClick={onClose}>
             <X className="h-5 w-5" />
           </button>
         </div>
+
+        <label className="block mb-4">
+          <span className="text-[11px] uppercase tracking-widest-xl text-muted-foreground">
+            Photo description (alt text)
+          </span>
+          <input
+            value={alt}
+            onChange={(e) => setAlt(e.target.value)}
+            placeholder="e.g. Bride laughing in golden hour light, Accra"
+            className="mt-2 block w-full bg-transparent border-b border-border px-0 py-2 focus:outline-none focus:border-foreground"
+          />
+        </label>
 
         <label className="block border border-dashed border-border p-8 text-center cursor-pointer hover:bg-muted/30 mb-6">
           <Upload className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
@@ -413,7 +427,7 @@ function EventPhotosModal({ eventId, onClose }: { eventId: string; onClose: () =
           {data?.photos?.map((p: any) => (
             <div key={p.id} className="relative group">
               <img src={p.url} alt={p.alt} className="w-full aspect-square object-cover" />
-              <button
+              <button aria-label="Delete"
                 onClick={async () => {
                   await removePhoto({ data: { id: p.id } });
                   refresh();
@@ -437,6 +451,7 @@ function HeroTab() {
   const remove = useServerFn(deleteHeroImage);
   const [hero, setHero] = useState<any[]>([]);
   const [busy, setBusy] = useState(false);
+  const [alt, setAlt] = useState("");
 
   const refresh = useCallback(() => list().then(setHero), [list]);
   useEffect(() => {
@@ -450,6 +465,7 @@ function HeroTab() {
       for (const f of Array.from(files)) {
         const fd = new FormData();
         fd.append("file", f);
+        fd.append("alt", alt);
         await upload({ data: fd });
       }
       refresh();
@@ -461,6 +477,18 @@ function HeroTab() {
   return (
     <div>
       <h2 className="font-serif text-2xl mb-6">Hero Carousel ({hero.length})</h2>
+      <label className="block mb-4">
+        <span className="text-[11px] uppercase tracking-widest-xl text-muted-foreground">
+          Image description (alt text)
+        </span>
+        <input
+          value={alt}
+          onChange={(e) => setAlt(e.target.value)}
+          placeholder="e.g. Couple walking along the Accra shoreline at dusk"
+          className="mt-2 block w-full bg-transparent border-b border-border px-0 py-2 focus:outline-none focus:border-foreground"
+        />
+      </label>
+
       <label className="block border border-dashed border-border p-10 text-center cursor-pointer hover:bg-muted/30 mb-8">
         <Upload className="h-6 w-6 mx-auto mb-3 text-muted-foreground" />
         <span className="text-[11px] uppercase tracking-widest-xl">
@@ -480,7 +508,7 @@ function HeroTab() {
         {hero.map((h) => (
           <div key={h.id} className="relative group">
             <img src={h.url} alt={h.alt} className="w-full aspect-[4/3] object-cover" />
-            <button
+            <button aria-label="Delete"
               onClick={async () => {
                 await remove({ data: { id: h.id } });
                 refresh();
@@ -703,10 +731,10 @@ function PackagesTab() {
                 <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{p.description}</p>
               </div>
               <div className="flex items-center gap-3">
-                <button onClick={() => setEditing(p)} className="text-foreground/70 hover:text-foreground">
+                <button aria-label="Edit" onClick={() => setEditing(p)} className="text-foreground/70 hover:text-foreground">
                   <Pencil className="h-4 w-4" />
                 </button>
-                <button
+                <button aria-label="Delete"
                   onClick={async () => {
                     if (!confirm(`Delete "${p.title}"?`)) return;
                     await remove({ data: { id: p.id } });
@@ -771,7 +799,7 @@ function PackageForm({
     >
       <div className="flex justify-between items-center">
         <h3 className="font-serif text-xl">{initial ? "Edit package" : "New package"}</h3>
-        <button type="button" onClick={onClose}><X className="h-4 w-4" /></button>
+        <button aria-label="Close" type="button" onClick={onClose}><X className="h-4 w-4" /></button>
       </div>
       <input
         required
@@ -905,10 +933,10 @@ function TestimonialsTab() {
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <button onClick={() => setEditing(t)} className="text-foreground/70 hover:text-foreground">
+                <button aria-label="Edit" onClick={() => setEditing(t)} className="text-foreground/70 hover:text-foreground">
                   <Pencil className="h-4 w-4" />
                 </button>
-                <button
+                <button aria-label="Delete"
                   onClick={async () => {
                     if (!confirm("Delete this testimonial?")) return;
                     await remove({ data: { id: t.id } });
@@ -960,7 +988,7 @@ function TestimonialForm({
     >
       <div className="flex justify-between items-center">
         <h3 className="font-serif text-xl">{initial ? "Edit testimonial" : "New testimonial"}</h3>
-        <button type="button" onClick={onClose}><X className="h-4 w-4" /></button>
+        <button aria-label="Close" type="button" onClick={onClose}><X className="h-4 w-4" /></button>
       </div>
       <textarea
         required

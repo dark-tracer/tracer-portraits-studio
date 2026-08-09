@@ -11,9 +11,17 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Editorial portrait and wedding photography by Traced in Light. Quiet, intentional images that endure.",
+          "Editorial portrait and wedding photography by Traced in Light, based in Accra, Ghana. Quiet, intentional images that endure.",
       },
+      { property: "og:title", content: "Traced in Light — Portrait & Wedding Photography" },
+      {
+        property: "og:description",
+        content:
+          "Editorial portrait and wedding photography by Traced in Light, based in Accra, Ghana.",
+      },
+      { property: "og:url", content: "https://tracer-portraits-studio.lovable.app/" },
     ],
+    links: [{ rel: "canonical", href: "https://tracer-portraits-studio.lovable.app/" }],
   }),
   loader: async () => {
     const [hero, recent] = await Promise.all([listHero(), listRecentPhotos()]);
@@ -85,7 +93,8 @@ function Index() {
           </Reveal>
           <Reveal delay={400}>
             <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl text-background font-light leading-none">
-              Traced in Light
+              <span className="sr-only">Traced in Light — Portrait &amp; Wedding Photography</span>
+              <span aria-hidden="true">Traced in Light</span>
             </h1>
           </Reveal>
           <Reveal delay={700}>

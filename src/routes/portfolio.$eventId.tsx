@@ -17,14 +17,45 @@ export const Route = createFileRoute("/portfolio/$eventId")({
     if (!data) throw notFound();
     return data;
   },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: `${loaderData.event.name} — Traced in Light` },
-          { name: "description", content: loaderData.event.description || loaderData.event.name },
-        ]
-      : [],
-  }),
+  head: ({ params, loaderData }) => {
+    const url = `https://tracer-portraits-studio.lovable.app/portfolio/${params.eventId}`;
+    if (!loaderData) return { meta: [], links: [{ rel: "canonical", href: url }] };
+    const desc = loaderData.event.description || `${loaderData.event.name} — photographed by Traced in Light.`;
+    return {
+      meta: [
+        { title: `${loaderData.event.name} — Traced in Light` },
+        { name: "description", content: desc },
+        { property: "og:title", content: `${loaderData.event.name} — Traced in Light` },
+        { property: "og:description", content: desc },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
+        ...(loaderData.photos?.[0]?.url?.startsWith("https://")
+          ? [
+              { property: "og:image", content: loaderData.photos[0].url },
+              { name: "twitter:image", content: loaderData.photos[0].url },
+            ]
+          : []),
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: loaderData.event.name,
+            description: desc,
+            url,
+            hasPart: (loaderData.photos ?? []).map((p: { url: string; alt: string }) => ({
+              "@type": "ImageObject",
+              contentUrl: p.url,
+              caption: p.alt,
+            })),
+          }),
+        },
+      ],
+    };
+  },
   notFoundComponent: () => (
     <div className="min-h-screen flex items-center justify-center pt-32 px-6">
       <div className="text-center">
