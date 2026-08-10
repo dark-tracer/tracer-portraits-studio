@@ -40,11 +40,11 @@ function HeroCarousel({ images }: { images: { id: string; url: string; alt: stri
 
   if (images.length === 0) {
     return (
-      <div className="absolute inset-0 bg-gradient-to-br from-foreground/90 via-foreground/70 to-foreground/40" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[var(--card)] via-background to-background" />
     );
   }
   return (
-    <div className="absolute inset-0 bg-foreground">
+    <div className="absolute inset-0 bg-background">
       {images.map((img, idx) => (
         <img
           key={img.id}
@@ -63,7 +63,7 @@ function HeroCarousel({ images }: { images: { id: string; url: string; alt: stri
               onClick={() => setI(idx)}
               aria-label={`Slide ${idx + 1}`}
               className={`h-1 transition-all ${
-                idx === i ? "w-8 bg-background" : "w-4 bg-background/40"
+                idx === i ? "w-8 bg-foreground" : "w-4 bg-foreground/40"
               }`}
             />
           ))}
@@ -84,28 +84,29 @@ function Index() {
       {/* HERO CAROUSEL */}
       <section className="relative h-screen w-full overflow-hidden">
         <HeroCarousel images={hero} />
-        <div className="absolute inset-0 bg-foreground/25" />
+        <div className="absolute inset-0 bg-background/45" />
+        <div className="absolute inset-0 bg-linear-to-t from-background via-background/40 to-background/20" />
         <div className="relative z-10 h-full w-full flex flex-col items-center justify-center text-center px-6">
           <Reveal delay={200}>
-            <p className="text-[11px] uppercase tracking-widest-xl text-background/80 mb-6">
+            <p className="text-[11px] uppercase tracking-widest-xl text-[var(--gold)] mb-6">
               Studio est. 2018
             </p>
           </Reveal>
           <Reveal delay={400}>
-            <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl text-background font-light leading-none">
+            <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl text-foreground font-light leading-none">
               <span className="sr-only">Traced in Light — Portrait &amp; Wedding Photography</span>
               <span aria-hidden="true">Traced in Light</span>
             </h1>
           </Reveal>
           <Reveal delay={700}>
-            <p className="mt-6 text-sm md:text-base text-background/85 font-light tracking-wide">
+            <p className="mt-6 text-sm md:text-base text-foreground/85 font-light tracking-wide">
               Portrait & Wedding Photography
             </p>
           </Reveal>
           <Reveal delay={1000}>
             <Link
               to="/portfolio"
-              className="mt-12 inline-flex items-center gap-3 border border-background/60 px-8 py-4 text-[11px] uppercase tracking-widest-xl text-background hover:bg-background hover:text-foreground transition-all duration-500"
+              className="mt-12 inline-flex items-center gap-3 border border-foreground/50 px-8 py-4 text-[11px] uppercase tracking-widest-xl text-foreground hover:bg-foreground hover:text-background transition-all duration-500"
             >
               View Work <ArrowRight className="h-3 w-3" />
             </Link>

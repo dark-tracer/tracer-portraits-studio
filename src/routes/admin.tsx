@@ -386,7 +386,7 @@ function EventPhotosModal({ eventId, onClose }: { eventId: string; onClose: () =
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-foreground/80 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-4 pt-20"
+      className="fixed inset-0 z-50 bg-background/85 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-4 pt-20"
       onClick={onClose}
     >
       <div className="bg-background w-full max-w-4xl p-8" onClick={(e) => e.stopPropagation()}>

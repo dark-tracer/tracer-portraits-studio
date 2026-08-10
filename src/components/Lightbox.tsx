@@ -30,13 +30,13 @@ export function Lightbox({ images, index, onClose, onPrev, onNext }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] bg-foreground/95 backdrop-blur-sm flex items-center justify-center animate-fade-in"
+      className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-sm flex items-center justify-center animate-fade-in"
       onClick={onClose}
     >
       <button
         aria-label="Close"
         onClick={onClose}
-        className="absolute top-6 right-6 text-background/80 hover:text-background transition-colors"
+        className="absolute top-6 right-6 text-foreground/80 hover:text-foreground transition-colors"
       >
         <X className="h-6 w-6" />
       </button>
@@ -46,7 +46,7 @@ export function Lightbox({ images, index, onClose, onPrev, onNext }: Props) {
           e.stopPropagation();
           onPrev();
         }}
-        className="absolute left-4 md:left-8 text-background/70 hover:text-background transition-colors"
+        className="absolute left-4 md:left-8 text-foreground/70 hover:text-foreground transition-colors"
       >
         <ChevronLeft className="h-8 w-8" />
       </button>
@@ -56,7 +56,7 @@ export function Lightbox({ images, index, onClose, onPrev, onNext }: Props) {
           e.stopPropagation();
           onNext();
         }}
-        className="absolute right-4 md:right-8 text-background/70 hover:text-background transition-colors"
+        className="absolute right-4 md:right-8 text-foreground/70 hover:text-foreground transition-colors"
       >
         <ChevronRight className="h-8 w-8" />
       </button>
@@ -68,11 +68,11 @@ export function Lightbox({ images, index, onClose, onPrev, onNext }: Props) {
       />
       <div className="absolute bottom-6 left-0 right-0 px-6 text-center space-y-2">
         {img.alt && (
-          <p className="text-sm md:text-base text-background/85 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm md:text-base text-foreground/85 max-w-2xl mx-auto leading-relaxed">
             {img.alt}
           </p>
         )}
-        <p className="text-[11px] uppercase tracking-widest-xl text-background/60">
+        <p className="text-[11px] uppercase tracking-widest-xl text-foreground/60">
           {index + 1} / {images.length}
         </p>
       </div>
