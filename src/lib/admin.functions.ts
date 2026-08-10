@@ -378,3 +378,49 @@ export const adminListTestimonials = createServerFn({ method: "GET" })
     const { data } = await sb.from("testimonials").select("*").order("sort_order", { ascending: true });
     return data ?? [];
   });
+
+// ============ FAQS ============
+const faqSchema = z.object({
+  question: z.string().min(1).max(300),
+  answer: z.string().max(3000).default(""),
+  sort_order: z.number().int().default(0),
+});
+
+export const adminListFaqs = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { data } = await sb.from("faqs").select("*").order("sort_order", { ascending: true });
+    return data ?? [];
+  });
+
+export const createFaq = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => faqSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { data: row, error } = await sb.from("faqs").insert(data).select().single();
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
+export const updateFaq = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => faqSchema.extend({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { id, ...rest } = data;
+    const { error } = await sb.from("faqs").update(rest).eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteFaq = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { error } = await sb.from("faqs").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });

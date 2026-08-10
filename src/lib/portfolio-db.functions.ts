@@ -159,3 +159,19 @@ export const listTestimonials = createServerFn({ method: "GET" }).handler(
     return (data ?? []) as TestimonialRow[];
   },
 );
+
+export type FaqRow = {
+  id: string;
+  question: string;
+  answer: string;
+  sort_order: number;
+};
+
+export const listFaqs = createServerFn({ method: "GET" }).handler(async (): Promise<FaqRow[]> => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("faqs")
+    .select("id, question, answer, sort_order")
+    .order("sort_order", { ascending: true });
+  return (data ?? []) as FaqRow[];
+});
