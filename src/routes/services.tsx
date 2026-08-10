@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/Reveal";
-import { FAQ, faqs } from "@/components/FAQ";
+import { FAQ } from "@/components/FAQ";
 import {
   listPackages,
   listTestimonials,
+  listFaqs,
   type PackageRow,
   type TestimonialRow,
+  type FaqRow,
 } from "@/lib/portfolio-db.functions";
 
 const SITE = "https://tracer-portraits-studio.lovable.app";
@@ -34,10 +36,10 @@ export const Route = createFileRoute("/services")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "FAQPage",
-          mainEntity: faqs.map((f) => ({
+          mainEntity: (loaderData?.faqs ?? []).map((f: FaqRow) => ({
             "@type": "Question",
-            name: f.q,
-            acceptedAnswer: { "@type": "Answer", text: f.a },
+            name: f.question,
+            acceptedAnswer: { "@type": "Answer", text: f.answer },
           })),
         }),
       },
@@ -69,8 +71,12 @@ export const Route = createFileRoute("/services")({
     ],
   }),
   loader: async () => {
-    const [packages, testimonials] = await Promise.all([listPackages(), listTestimonials()]);
-    return { packages, testimonials };
+    const [packages, testimonials, faqs] = await Promise.all([
+      listPackages(),
+      listTestimonials(),
+      listFaqs(),
+    ]);
+    return { packages, testimonials, faqs };
   },
   errorComponent: () => (
     <div className="min-h-screen flex items-center justify-center pt-32 px-6">
@@ -82,9 +88,10 @@ export const Route = createFileRoute("/services")({
 });
 
 function ServicesPage() {
-  const { packages, testimonials } = Route.useLoaderData() as {
+  const { packages, testimonials, faqs } = Route.useLoaderData() as {
     packages: PackageRow[];
     testimonials: TestimonialRow[];
+    faqs: FaqRow[];
   };
 
   return (
@@ -204,7 +211,7 @@ function ServicesPage() {
         </section>
       )}
 
-      <FAQ />
+      <FAQ items={faqs} />
     </>
 
   );
