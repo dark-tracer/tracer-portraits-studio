@@ -46,7 +46,7 @@
   --popover-foreground: oklch(0.965 0.006 275);
 
   /* Primary = indigo accent */
-  --primary: oklch(0.55 0.21 governs);
+  --primary: oklch(0.55 0.21 275);
   --primary-foreground: oklch(0.98 0.005 275);
 
   --secondary: oklch(0.24 0.05 277);
