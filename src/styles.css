@@ -197,3 +197,38 @@
     opacity: 0;
   }
 }
+
+/* --- Midnight Indigo surface treatment --- */
+.surface-card {
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--card) 92%, transparent),
+    color-mix(in oklab, var(--background) 90%, transparent)
+  );
+  border: 1px solid var(--border);
+}
+
+.glow-accent {
+  box-shadow: 0 0 60px -20px color-mix(in oklab, var(--gold) 60%, transparent);
+}
+
+/* Soft indigo aura behind hero / section headers */
+.aura::before {
+  content: "";
+  position: absolute;
+  inset: -20% 10% auto 10%;
+  height: 60%;
+  background: radial-gradient(
+    60% 60% at 50% 40%,
+    color-mix(in oklab, var(--gold) 22%, transparent),
+    transparent 70%
+  );
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Images sit slightly recessed on dark */
+.image-hover img {
+  filter: saturate(1.02) contrast(1.02);
+}
