@@ -119,12 +119,12 @@ function ServicesPage() {
             <Reveal key={p.id} delay={i * 120} className="bg-background">
               <article
                 className={`h-full p-10 md:p-12 flex flex-col ${
-                  p.featured ? "md:bg-foreground md:text-background" : ""
+                  p.featured ? "bg-[var(--card)] glow-accent" : ""
                 }`}
               >
                 <p
                   className={`font-serif text-2xl ${
-                    p.featured ? "md:text-background/60" : "text-muted-foreground"
+                    "text-muted-foreground"
                   }`}
                 >
                   {String(i + 1).padStart(2, "0")}
@@ -137,7 +137,7 @@ function ServicesPage() {
                 )}
                 <p
                   className={`mt-6 text-sm leading-relaxed font-light ${
-                    p.featured ? "md:text-background/80" : "text-foreground/80"
+                    "text-foreground/80"
                   }`}
                 >
                   {p.description}
@@ -146,14 +146,14 @@ function ServicesPage() {
                 {p.includes.length > 0 && (
                   <ul
                     className={`mt-10 space-y-3 text-sm border-t pt-8 ${
-                      p.featured ? "md:border-background/20" : "border-border"
+                      "border-border"
                     }`}
                   >
                     {p.includes.map((inc) => (
                       <li key={inc} className="flex items-start gap-3">
                         <span
                           className={`mt-2 h-px w-3 flex-none ${
-                            p.featured ? "md:bg-background/60" : "bg-foreground/40"
+                            "bg-foreground/40"
                           }`}
                         />
                         <span className="font-light">{inc}</span>
@@ -166,8 +166,8 @@ function ServicesPage() {
                   to="/contact"
                   className={`mt-12 inline-flex items-center justify-center w-full border px-8 py-4 text-[11px] uppercase tracking-widest-xl transition-colors ${
                     p.featured
-                      ? "md:border-background md:text-background md:hover:bg-background md:hover:text-foreground border-foreground text-foreground hover:bg-foreground hover:text-background"
-                      : "border-foreground text-foreground hover:bg-foreground hover:text-background"
+                      ? "border-[var(--gold)] text-foreground hover:bg-[var(--gold)] hover:text-primary-foreground"
+                      : "border-foreground/60 text-foreground hover:bg-foreground hover:text-background"
                   }`}
                 >
                   Book Now
