@@ -24,6 +24,10 @@ import {
   adminListAbout,
   adminListPackages,
   adminListTestimonials,
+  adminListFaqs,
+  createFaq,
+  updateFaq,
+  deleteFaq,
 } from "@/lib/admin.functions";
 import { listEvents, listHero, getEvent } from "@/lib/portfolio-db.functions";
 import { Trash2, Upload, Plus, LogOut, X, Pencil } from "lucide-react";
@@ -34,7 +38,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Tab = "events" | "hero" | "about" | "packages" | "testimonials";
+type Tab = "events" | "hero" | "about" | "packages" | "testimonials" | "faqs";
 type Category = "portrait" | "wedding" | "event";
 
 function AdminPage() {
@@ -76,6 +80,7 @@ function AdminPage() {
     { key: "about", label: "About Page" },
     { key: "packages", label: "Packages" },
     { key: "testimonials", label: "Testimonials" },
+    { key: "faqs", label: "FAQs" },
   ];
 
   return (
@@ -118,6 +123,7 @@ function AdminPage() {
         {tab === "about" && <AboutTab />}
         {tab === "packages" && <PackagesTab />}
         {tab === "testimonials" && <TestimonialsTab />}
+        {tab === "faqs" && <FaqsTab />}
       </div>
     </section>
   );
@@ -1003,6 +1009,172 @@ function TestimonialForm({
         value={attribution}
         onChange={(e) => setAttribution(e.target.value)}
         className="border-b border-border bg-transparent py-2 outline-none"
+      />
+      <label className="block">
+        <span className="text-[11px] uppercase tracking-widest-xl text-muted-foreground">
+          Sort order
+        </span>
+        <input
+          type="number"
+          value={sortOrder}
+          onChange={(e) => setSortOrder(parseInt(e.target.value || "0", 10))}
+          className="mt-2 w-full border-b border-border bg-transparent py-2 outline-none"
+        />
+      </label>
+      <div className="flex gap-3">
+        <button
+          type="submit"
+          disabled={busy}
+          className="bg-primary text-primary-foreground px-6 py-3 text-[11px] uppercase tracking-widest-xl"
+        >
+          {busy ? "Saving…" : initial ? "Save changes" : "Create"}
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          className="text-[11px] uppercase tracking-widest-xl text-muted-foreground"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  );
+}
+
+// ============ FAQS TAB ============
+function FaqsTab() {
+  const load = useServerFn(adminListFaqs);
+  const create = useServerFn(createFaq);
+  const update = useServerFn(updateFaq);
+  const remove = useServerFn(deleteFaq);
+  const [items, setItems] = useState<any[]>([]);
+  const [editing, setEditing] = useState<any | null>(null);
+  const [showNew, setShowNew] = useState(false);
+
+  const refresh = useCallback(() => load().then(setItems), [load]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="font-serif text-2xl">FAQs ({items.length})</h2>
+        <button
+          onClick={() => setShowNew(true)}
+          className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-3 text-[11px] uppercase tracking-widest-xl"
+        >
+          <Plus className="h-4 w-4" /> New FAQ
+        </button>
+      </div>
+
+      {showNew && (
+        <FaqForm
+          onClose={() => setShowNew(false)}
+          onSubmit={async (d) => {
+            await create({ data: d });
+            refresh();
+          }}
+        />
+      )}
+      {editing && (
+        <FaqForm
+          initial={editing}
+          onClose={() => setEditing(null)}
+          onSubmit={async (d) => {
+            await update({ data: { id: editing.id, ...d } });
+            refresh();
+          }}
+        />
+      )}
+
+      <div className="grid gap-4">
+        {items.map((f) => (
+          <div key={f.id} className="border border-border p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
+                <p className="font-serif text-lg leading-snug">{f.question}</p>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{f.answer}</p>
+                <p className="text-[11px] uppercase tracking-widest-xl text-muted-foreground mt-3">
+                  sort {f.sort_order}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  aria-label="Edit"
+                  onClick={() => setEditing(f)}
+                  className="text-foreground/70 hover:text-foreground"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
+                <button
+                  aria-label="Delete"
+                  onClick={async () => {
+                    if (!confirm("Delete this FAQ?")) return;
+                    await remove({ data: { id: f.id } });
+                    refresh();
+                  }}
+                  className="text-destructive hover:opacity-70"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+        {items.length === 0 && <p className="text-muted-foreground py-12 text-center">No FAQs yet.</p>}
+      </div>
+    </div>
+  );
+}
+
+function FaqForm({
+  initial,
+  onClose,
+  onSubmit,
+}: {
+  initial?: any;
+  onClose: () => void;
+  onSubmit: (d: any) => Promise<void>;
+}) {
+  const [question, setQuestion] = useState(initial?.question ?? "");
+  const [answer, setAnswer] = useState(initial?.answer ?? "");
+  const [sortOrder, setSortOrder] = useState<number>(initial?.sort_order ?? 0);
+  const [busy, setBusy] = useState(false);
+
+  return (
+    <form
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setBusy(true);
+        try {
+          await onSubmit({ question, answer, sort_order: sortOrder });
+          onClose();
+        } finally {
+          setBusy(false);
+        }
+      }}
+      className="border border-border p-6 mb-6 grid gap-4"
+    >
+      <div className="flex justify-between items-center">
+        <h3 className="font-serif text-xl">{initial ? "Edit FAQ" : "New FAQ"}</h3>
+        <button aria-label="Close" type="button" onClick={onClose}>
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+      <input
+        required
+        placeholder="Question"
+        value={question}
+        onChange={(e) => setQuestion(e.target.value)}
+        className="border-b border-border bg-transparent py-2 outline-none"
+      />
+      <textarea
+        placeholder="Answer"
+        value={answer}
+        onChange={(e) => setAnswer(e.target.value)}
+        rows={4}
+        className="border border-border bg-transparent p-3 outline-none"
       />
       <label className="block">
         <span className="text-[11px] uppercase tracking-widest-xl text-muted-foreground">
