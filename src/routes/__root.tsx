@@ -3,6 +3,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { Ticker } from "@/components/Ticker";
 
 import appCss from "../styles.css?url";
 
