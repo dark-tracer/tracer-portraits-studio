@@ -5,12 +5,13 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-serif: "Cormorant Garamond", "Playfair Display", Georgia, serif;
-  --font-sans: "Karla", "Inter", system-ui, -apple-system, sans-serif;
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-serif: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --radius-sm: calc(var(--radius) - 12px);
+  --radius-md: calc(var(--radius) - 8px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 8px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -35,41 +36,41 @@
 
 :root {
   color-scheme: dark;
-  --radius: 0;
-  /* Midnight Indigo — deep navy-black canvas */
-  --background: oklch(0.145 0.028 275);
-  --foreground: oklch(0.965 0.006 275);
+  --radius: 1.25rem;
 
-  --card: oklch(0.19 0.036 275);
-  --card-foreground: oklch(0.965 0.006 275);
+  /* Editorial near-black */
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(1 0 0);
 
-  --popover: oklch(0.19 0.036 275);
-  --popover-foreground: oklch(0.965 0.006 275);
+  --card: oklch(0.185 0 0);
+  --card-foreground: oklch(1 0 0);
 
-  /* Primary = indigo accent */
-  --primary: oklch(0.55 0.21 275);
-  --primary-foreground: oklch(0.98 0.005 275);
+  --popover: oklch(0.185 0 0);
+  --popover-foreground: oklch(1 0 0);
 
-  --secondary: oklch(0.24 0.05 277);
-  --secondary-foreground: oklch(0.965 0.006 275);
+  /* Purple #7C3AED */
+  --primary: oklch(0.524 0.243 293.9);
+  --primary-foreground: oklch(1 0 0);
 
-  --muted: oklch(0.24 0.045 277);
-  --muted-foreground: oklch(0.7 0.025 277);
+  --secondary: oklch(0.22 0 0);
+  --secondary-foreground: oklch(1 0 0);
 
-  --accent: oklch(0.28 0.07 278);
-  --accent-foreground: oklch(0.97 0.006 275);
+  --muted: oklch(0.22 0 0);
+  --muted-foreground: oklch(0.72 0 0);
+
+  --accent: oklch(0.26 0 0);
+  --accent-foreground: oklch(1 0 0);
 
   --destructive: oklch(0.6 0.2 27);
-  --destructive-foreground: oklch(0.98 0.005 275);
+  --destructive-foreground: oklch(1 0 0);
 
-  --border: oklch(0.3 0.05 277);
-  --input: oklch(0.3 0.05 277);
-  --ring: oklch(0.55 0.21 275);
+  --border: oklch(0.28 0 0);
+  --input: oklch(0.28 0 0);
+  --ring: oklch(0.524 0.243 293.9);
 
-  /* Indigo accent (replaces gold) */
-  --gold: oklch(0.72 0.16 272);
+  /* legacy accent alias now maps to purple */
+  --gold: oklch(0.62 0.21 293.9);
 }
-
 
 @layer base {
   * {
@@ -83,32 +84,49 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    font-feature-settings: "ss01", "cv11";
   }
   h1, h2, h3, h4, h5 {
-    font-family: var(--font-serif);
-    font-weight: 300;
-    letter-spacing: -0.01em;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  p {
+    line-height: 1.8;
   }
 }
 
-/* Editorial utilities */
-.font-serif {
-  font-family: var(--font-serif);
+.font-serif,
+.font-display {
+  font-family: var(--font-display);
 }
 .font-sans {
   font-family: var(--font-sans);
 }
 
+.display-xl {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+
+.eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--muted-foreground);
+}
+
 .tracking-widest-xl {
-  letter-spacing: 0.35em;
+  letter-spacing: 0.22em;
 }
 
 /* Reveal on scroll */
 .reveal {
   opacity: 0;
   transform: translateY(24px);
-  transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1), transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform;
 }
 .reveal.is-visible {
@@ -116,7 +134,6 @@
   transform: translateY(0);
 }
 
-/* Gold link underline */
 .link-underline {
   position: relative;
   display: inline-block;
@@ -128,10 +145,10 @@
   bottom: -2px;
   height: 1px;
   width: 100%;
-  background: var(--gold);
+  background: var(--primary);
   transform: scaleX(0);
   transform-origin: right;
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .link-underline:hover::after {
   transform: scaleX(1);
@@ -141,22 +158,22 @@
 /* Image hover */
 .image-hover {
   overflow: hidden;
+  border-radius: var(--radius);
 }
 .image-hover img {
-  transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s ease;
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .image-hover:hover img {
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 
-/* Handwriting script font for brand mark */
+/* Cursive brand mark */
 .font-script {
   font-family: "Pinyon Script", "Great Vibes", "Dancing Script", cursive;
   font-weight: 400;
   letter-spacing: 0.01em;
 }
 
-/* Handwritten reveal — left→right wipe simulating pen stroke */
 .til-write {
   clip-path: inset(0 100% 0 0);
   opacity: 0;
@@ -183,7 +200,6 @@
   display: none;
 }
 
-
 @keyframes wa-pulse {
   0% {
     transform: scale(1);
@@ -199,37 +215,65 @@
   }
 }
 
-/* --- Midnight Indigo surface treatment --- */
+/* Marquee ticker */
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll 38s linear infinite;
+}
+
+/* Surfaces */
 .surface-card {
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--card) 92%, transparent),
-    color-mix(in oklab, var(--background) 90%, transparent)
-  );
+  background: var(--card);
   border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
-.glow-accent {
-  box-shadow: 0 0 60px -20px color-mix(in oklab, var(--gold) 60%, transparent);
+.btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  border-radius: 9999px;
+  padding: 0.85rem 1.75rem;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+.btn-purple {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.btn-purple:hover {
+  filter: brightness(1.12);
+}
+.btn-outline-light {
+  border: 1px solid color-mix(in oklab, var(--foreground) 45%, transparent);
+  color: var(--foreground);
+}
+.btn-outline-light:hover {
+  background: var(--foreground);
+  color: var(--background);
 }
 
-/* Soft indigo aura behind hero / section headers */
-.aura::before {
-  content: "";
-  position: absolute;
-  inset: -20% 10% auto 10%;
-  height: 60%;
-  background: radial-gradient(
-    60% 60% at 50% 40%,
-    color-mix(in oklab, var(--gold) 22%, transparent),
-    transparent 70%
-  );
-  filter: blur(60px);
+.watermark-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  color: color-mix(in oklab, var(--foreground) 6%, transparent);
+  line-height: 0.8;
+  white-space: nowrap;
+  user-select: none;
   pointer-events: none;
-  z-index: 0;
-}
-
-/* Images sit slightly recessed on dark */
-.image-hover img {
-  filter: saturate(1.02) contrast(1.02);
 }

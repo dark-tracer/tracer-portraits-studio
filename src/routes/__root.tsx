@@ -3,6 +3,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { Ticker } from "@/components/Ticker";
 
 import appCss from "../styles.css?url";
 
@@ -98,7 +99,7 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Karla:wght@300;400;500;600&family=Pinyon+Script&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Pinyon+Script&display=swap",
       },
     ],
   }),
@@ -129,9 +130,9 @@ function RootComponent() {
       <main>
         <Outlet />
       </main>
+      <Ticker />
       <Footer />
       <WhatsAppButton />
     </>
-
   );
 }
