@@ -129,9 +129,9 @@ function RootComponent() {
       <main>
         <Outlet />
       </main>
+      <Ticker />
       <Footer />
       <WhatsAppButton />
     </>
-
   );
 }
