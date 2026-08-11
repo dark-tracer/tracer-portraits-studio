@@ -8,51 +8,59 @@ export function FAQ({ items }: { items: FaqRow[] }) {
 
   if (!items.length) return null;
 
+  const half = Math.ceil(items.length / 2);
+  const columns = [items.slice(0, half), items.slice(half)];
+
   return (
-    <section className="px-6 md:px-12 py-32 md:py-48 border-t border-border">
-      <div className="mx-auto max-w-3xl">
+    <section className="px-6 md:px-12 py-24 md:py-32">
+      <div className="mx-auto max-w-[1600px]">
         <Reveal>
-          <h2 className="font-serif text-4xl md:text-6xl font-light text-center mb-16 md:mb-24">
+          <p className="eyebrow mb-4">FAQ&apos;s</p>
+          <h2 className="display-xl text-3xl md:text-5xl border-b border-border pb-8">
             Frequently Asked Questions
           </h2>
         </Reveal>
 
-        <div className="divide-y divide-border">
-          {items.map((f, i) => {
-
-            const isOpen = open === i;
-            return (
-              <Reveal key={f.id} delay={i * 60}>
-                <div>
-                  <button
-                    type="button"
-                    onClick={() => setOpen(isOpen ? null : i)}
-                    aria-expanded={isOpen}
-                    className="w-full flex items-start justify-between gap-6 py-7 text-left"
-                  >
-                    <span className="font-serif text-xl md:text-2xl font-light leading-snug">
-                      {f.question}
-                    </span>
-                    <Plus
-                      className={`mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-300 ${
-                        isOpen ? "rotate-45" : ""
-                      }`}
-                    />
-                  </button>
-                  <div
-                    className="grid transition-all duration-500 ease-out"
-                    style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
-                  >
-                    <div className="overflow-hidden">
-                      <p className="pb-8 pr-10 text-sm md:text-base leading-relaxed text-muted-foreground">
-                        {f.answer}
-                      </p>
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-x-16">
+          {columns.map((col, c) => (
+            <div key={c}>
+              {col.map((f, j) => {
+                const i = c * half + j;
+                const isOpen = open === i;
+                return (
+                  <Reveal key={f.id} delay={j * 60}>
+                    <div className="border-b border-border">
+                      <button
+                        type="button"
+                        onClick={() => setOpen(isOpen ? null : i)}
+                        aria-expanded={isOpen}
+                        className="w-full flex items-start justify-between gap-6 py-6 text-left"
+                      >
+                        <span className="text-sm md:text-base uppercase tracking-wide font-medium leading-snug">
+                          {f.question}
+                        </span>
+                        <Plus
+                          className={`mt-1 h-4 w-4 shrink-0 text-primary transition-transform duration-300 ${
+                            isOpen ? "rotate-45" : ""
+                          }`}
+                        />
+                      </button>
+                      <div
+                        className="grid transition-all duration-500 ease-out"
+                        style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
+                      >
+                        <div className="overflow-hidden">
+                          <p className="pb-6 pr-10 text-sm leading-relaxed text-muted-foreground">
+                            {f.answer}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </Reveal>
-            );
-          })}
+                  </Reveal>
+                );
+              })}
+            </div>
+          ))}
         </div>
       </div>
     </section>
