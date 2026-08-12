@@ -133,7 +133,7 @@ function Index() {
             </p>
             <Link
               to="/about"
-              className="mt-10 inline-flex items-center gap-3 text-[12px] uppercase tracking-widest-xl link-underline"
+              className="mt-10 inline-flex items-center gap-3 whitespace-nowrap text-[12px] uppercase tracking-widest-xl link-underline"
             >
               More about me <ArrowRight className="h-3.5 w-3.5" />
             </Link>
