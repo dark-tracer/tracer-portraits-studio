@@ -1,8 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { Reveal } from "@/components/Reveal";
-import { ArrowRight } from "lucide-react";
-import { listHero, listRecentPhotos } from "@/lib/portfolio-db.functions";
+import { Testimonials } from "@/components/Testimonials";
+import { ArrowUpRight, ArrowRight } from "lucide-react";
+import {
+  listHero,
+  listRecentPhotos,
+  listPackages,
+  listTestimonials,
+  type PackageRow,
+  type TestimonialRow,
+} from "@/lib/portfolio-db.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,157 +31,182 @@ export const Route = createFileRoute("/")({
     links: [{ rel: "canonical", href: "https://tracer-portraits-studio.lovable.app/" }],
   }),
   loader: async () => {
-    const [hero, recent] = await Promise.all([listHero(), listRecentPhotos()]);
-    return { hero, recent };
+    const [hero, recent, packages, testimonials] = await Promise.all([
+      listHero(),
+      listRecentPhotos(),
+      listPackages(),
+      listTestimonials(),
+    ]);
+    return { hero, recent, packages, testimonials };
   },
+  errorComponent: () => (
+    <div className="min-h-screen flex items-center justify-center pt-32 px-6">
+      <p>Couldn&apos;t load the homepage.</p>
+    </div>
+  ),
+  notFoundComponent: () => null,
   component: Index,
 });
 
-function HeroCarousel({ images }: { images: { id: string; url: string; alt: string }[] }) {
-  const [i, setI] = useState(0);
-  useEffect(() => {
-    if (images.length < 2) return;
-    const t = setInterval(() => setI((x) => (x + 1) % images.length), 5500);
-    return () => clearInterval(t);
-  }, [images.length]);
+type Img = { id: string; url: string; alt: string };
 
-  if (images.length === 0) {
+function Mosaic({ images }: { images: Img[] }) {
+  const slots = [
+    "col-span-6 md:col-span-3 aspect-[3/4]",
+    "col-span-6 md:col-span-3 aspect-[3/4] md:mt-10",
+    "col-span-12 md:col-span-3 aspect-[4/5]",
+    "col-span-6 md:col-span-3 aspect-[3/4] md:mt-10",
+    "col-span-6 md:col-span-3 aspect-square hidden md:block",
+    "col-span-6 md:col-span-3 aspect-[3/4] hidden md:block",
+  ];
+  const picks = images.slice(0, 6);
+
+  if (picks.length === 0) {
     return (
-      <div className="absolute inset-0 bg-gradient-to-br from-[var(--card)] via-background to-background" />
+      <div className="grid grid-cols-12 gap-3 md:gap-5">
+        {slots.slice(0, 3).map((s, i) => (
+          <div key={i} className={`${s} rounded-[var(--radius)] bg-card`} />
+        ))}
+      </div>
     );
   }
+
   return (
-    <div className="absolute inset-0 bg-background">
-      {images.map((img, idx) => (
-        <img
-          key={img.id}
-          src={img.url}
-          alt={img.alt}
-          className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[1800ms] ${
-            idx === i ? "opacity-100" : "opacity-0"
-          }`}
-        />
+    <div className="grid grid-cols-12 gap-3 md:gap-5">
+      {picks.map((img, i) => (
+        <Reveal key={img.id} delay={i * 90} className={slots[i % slots.length]}>
+          <div className="image-hover h-full w-full">
+            <img src={img.url} alt={img.alt} className="h-full w-full object-cover" />
+          </div>
+        </Reveal>
       ))}
-      {images.length > 1 && (
-        <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-2 z-20">
-          {images.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setI(idx)}
-              aria-label={`Slide ${idx + 1}`}
-              className={`h-1 transition-all ${
-                idx === i ? "w-8 bg-foreground" : "w-4 bg-foreground/40"
-              }`}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
 
 function Index() {
-  const { hero, recent } = Route.useLoaderData() as {
-    hero: Array<{ id: string; url: string; alt: string }>;
-    recent: Array<{ id: string; url: string; alt: string }>;
+  const { hero, recent, packages, testimonials } = Route.useLoaderData() as {
+    hero: Img[];
+    recent: Array<Img & { event_name: string | null; category: string | null }>;
+    packages: PackageRow[];
+    testimonials: TestimonialRow[];
   };
 
   return (
     <>
-      {/* HERO CAROUSEL */}
-      <section className="relative h-screen w-full overflow-hidden">
-        <HeroCarousel images={hero} />
-        <div className="absolute inset-0 bg-background/45" />
-        <div className="absolute inset-0 bg-linear-to-t from-background via-background/40 to-background/20" />
-        <div className="relative z-10 h-full w-full flex flex-col items-center justify-center text-center px-6">
-          <Reveal delay={200}>
-            <p className="text-[11px] uppercase tracking-widest-xl text-[var(--gold)] mb-6">
-              Studio est. 2018
-            </p>
-          </Reveal>
-          <Reveal delay={400}>
-            <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl text-foreground font-light leading-none">
-              <span className="sr-only">Traced in Light — Portrait &amp; Wedding Photography</span>
-              <span aria-hidden="true">Traced in Light</span>
-            </h1>
-          </Reveal>
-          <Reveal delay={700}>
-            <p className="mt-6 text-sm md:text-base text-foreground/85 font-light tracking-wide">
-              Portrait & Wedding Photography
-            </p>
-          </Reveal>
-          <Reveal delay={1000}>
-            <Link
-              to="/portfolio"
-              className="mt-12 inline-flex items-center gap-3 border border-foreground/50 px-8 py-4 text-[11px] uppercase tracking-widest-xl text-foreground hover:bg-foreground hover:text-background transition-all duration-500"
-            >
-              View Work <ArrowRight className="h-3 w-3" />
-            </Link>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* INTRO STATEMENT */}
-      <section className="py-32 md:py-48 px-6 md:px-12">
-        <div className="mx-auto max-w-4xl text-center">
+      {/* HERO */}
+      <section className="px-5 md:px-10 pt-32 md:pt-40 pb-6">
+        <div className="mx-auto max-w-[1600px]">
           <Reveal>
-            <p className="text-[11px] uppercase tracking-widest-xl text-[var(--gold)] mb-8">
-              — A Note from the Studio
-            </p>
+            <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="eyebrow mb-5">Portrait · Wedding · Events — Accra, Ghana</p>
+                <h1 className="display-xl text-[15vw] leading-[0.88] md:text-[8vw]">
+                  Traced in Light
+                </h1>
+              </div>
+              <Link to="/contact" className="btn-pill btn-purple self-start md:mb-4">
+                Let&apos;s Work Together <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </div>
           </Reveal>
-          <Reveal delay={150}>
-            <p className="font-serif text-3xl md:text-5xl leading-tight text-foreground font-light">
-              "Every photograph is a quiet record of a moment that will not return. I make pictures
-              with intention — for those who want to remember the truth of things."
-            </p>
-          </Reveal>
-          <Reveal delay={400}>
-            <p className="mt-10 font-script text-3xl text-muted-foreground">Traced in Light</p>
-          </Reveal>
+
+          <div className="mt-10 md:mt-14">
+            <Mosaic images={hero.length ? hero : recent} />
+          </div>
         </div>
       </section>
 
-      {/* RECENTLY ADDED */}
-      {recent.length > 0 && (
-        <section className="px-6 md:px-12 pb-24">
+      {/* STATEMENT */}
+      <section className="px-5 md:px-10 py-24 md:py-32">
+        <div className="mx-auto max-w-[1600px] grid grid-cols-1 md:grid-cols-12 gap-10">
+          <div className="md:col-span-4">
+            <p className="eyebrow">About the studio</p>
+          </div>
+          <div className="md:col-span-8">
+            <h2 className="display-xl text-3xl md:text-5xl leading-tight">
+              Every photograph is a quiet record of a moment that will not return.
+            </h2>
+            <p className="mt-8 max-w-2xl text-base font-light leading-relaxed text-muted-foreground">
+              I make pictures with intention — for people who want to remember the truth of
+              things, not a performance of it. Unhurried, honest, made to be lived with.
+            </p>
+            <Link
+              to="/about"
+              className="mt-10 inline-flex items-center gap-3 text-[12px] uppercase tracking-widest-xl link-underline"
+            >
+              More about me <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* SERVICES PREVIEW */}
+      {packages.length > 0 && (
+        <section className="px-5 md:px-10 pb-8">
           <div className="mx-auto max-w-[1600px]">
             <Reveal>
-              <div className="flex items-end justify-between mb-12 md:mb-20">
-                <div>
-                  <p className="text-[11px] uppercase tracking-widest-xl text-muted-foreground mb-3">
-                    Selected Work
-                  </p>
-                  <h2 className="font-serif text-4xl md:text-6xl text-foreground">Recently added</h2>
-                </div>
-                <Link
-                  to="/portfolio"
-                  className="hidden md:inline-flex link-underline text-[11px] uppercase tracking-widest-xl text-foreground"
-                >
-                  Full portfolio
+              <p className="eyebrow mb-4">Services</p>
+              <h2 className="display-xl text-3xl md:text-5xl border-b border-border pb-8">
+                What I Offer
+              </h2>
+            </Reveal>
+            <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
+              {packages.slice(0, 3).map((p, i) => (
+                <Reveal key={p.id} delay={i * 100}>
+                  <article className="surface-card h-full p-8 flex flex-col">
+                    <span className="eyebrow">{String(i + 1).padStart(2, "0")}</span>
+                    <h3 className="mt-8 display-xl text-2xl">{p.title}</h3>
+                    {p.starting && <p className="mt-2 text-sm text-primary">{p.starting}</p>}
+                    <p className="mt-4 text-sm font-light leading-relaxed text-muted-foreground">
+                      {p.description}
+                    </p>
+                    <Link
+                      to="/services"
+                      className="mt-8 inline-flex w-fit items-center gap-2 text-[11px] uppercase tracking-widest-xl link-underline"
+                    >
+                      Learn more <ArrowUpRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* RECENT WORK */}
+      {recent.length > 0 && (
+        <section className="px-5 md:px-10 py-24 md:py-32">
+          <div className="mx-auto max-w-[1600px]">
+            <Reveal>
+              <p className="eyebrow mb-4">Portfolio</p>
+              <div className="flex flex-wrap items-end justify-between gap-6 border-b border-border pb-8">
+                <h2 className="display-xl text-3xl md:text-5xl">Recently Added</h2>
+                <Link to="/portfolio" className="btn-pill btn-outline-light">
+                  View all work <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </div>
             </Reveal>
 
-            <div className="grid grid-cols-12 gap-4 md:gap-6">
-              {recent.map((p, idx) => (
-                <Reveal
-                  key={p.id}
-                  className={
-                    idx === 0
-                      ? "col-span-12 md:col-span-7"
-                      : idx === 1
-                        ? "col-span-12 md:col-span-5 md:mt-24"
-                        : "col-span-12 md:col-span-6 md:col-start-4"
-                  }
-                  delay={idx * 150}
-                >
-                  <Link to="/portfolio" className="block image-hover">
-                    <img
-                      src={p.url}
-                      alt={p.alt}
-                      loading="lazy"
-                      className="w-full aspect-[4/5] object-cover"
-                    />
+            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {recent.map((p, i) => (
+                <Reveal key={p.id} delay={i * 110}>
+                  <Link to="/portfolio" className="group block">
+                    <div className="image-hover">
+                      <img
+                        src={p.url}
+                        alt={p.alt}
+                        loading="lazy"
+                        className="w-full aspect-[4/5] object-cover"
+                      />
+                    </div>
+                    <div className="mt-4 flex items-center justify-between gap-4">
+                      <span className="text-sm text-foreground truncate">{p.event_name}</span>
+                      {p.category && (
+                        <span className="eyebrow shrink-0 text-primary">{p.category}</span>
+                      )}
+                    </div>
                   </Link>
                 </Reveal>
               ))}
@@ -183,29 +215,7 @@ function Index() {
         </section>
       )}
 
-      {/* CTA */}
-      <section className="py-32 md:py-48 px-6 md:px-12 border-t border-border">
-        <div className="mx-auto max-w-3xl text-center">
-          <Reveal>
-            <p className="text-[11px] uppercase tracking-widest-xl text-[var(--gold)] mb-6">
-              Currently booking
-            </p>
-          </Reveal>
-          <Reveal delay={150}>
-            <h2 className="font-serif text-4xl md:text-6xl text-foreground">
-              Let's make something honest together.
-            </h2>
-          </Reveal>
-          <Reveal delay={300}>
-            <Link
-              to="/contact"
-              className="mt-12 inline-flex items-center gap-3 bg-primary text-primary-foreground px-10 py-4 text-[11px] uppercase tracking-widest-xl hover:opacity-90 transition-opacity"
-            >
-              Begin an Inquiry <ArrowRight className="h-3 w-3" />
-            </Link>
-          </Reveal>
-        </div>
-      </section>
+      <Testimonials items={testimonials} />
     </>
   );
 }
