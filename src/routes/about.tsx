@@ -1,6 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/Reveal";
-import { getAbout, type AboutContent } from "@/lib/portfolio-db.functions";
+import { Testimonials } from "@/components/Testimonials";
+import { ArrowUpRight } from "lucide-react";
+import {
+  getAbout,
+  listTestimonials,
+  type AboutContent,
+  type TestimonialRow,
+} from "@/lib/portfolio-db.functions";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -21,10 +28,13 @@ export const Route = createFileRoute("/about")({
     ],
     links: [{ rel: "canonical", href: "https://tracer-portraits-studio.lovable.app/about" }],
   }),
-  loader: () => getAbout(),
+  loader: async () => {
+    const [about, testimonials] = await Promise.all([getAbout(), listTestimonials()]);
+    return { about, testimonials };
+  },
   errorComponent: () => (
     <div className="min-h-screen flex items-center justify-center pt-32 px-6">
-      <p>Couldn't load the about page.</p>
+      <p>Couldn&apos;t load the about page.</p>
     </div>
   ),
   notFoundComponent: () => null,
@@ -32,84 +42,68 @@ export const Route = createFileRoute("/about")({
 });
 
 function AboutPage() {
-  const about = Route.useLoaderData() as AboutContent | null;
-  const headline =
-    about?.headline ?? "I make pictures the way I'd want to be remembered.";
-  const body = about?.body ?? "";
-  const weddings = about?.weddings_captured ?? "200+";
-  const years = about?.years_behind_lens ?? "9 yrs";
+  const { about, testimonials } = Route.useLoaderData() as {
+    about: AboutContent | null;
+    testimonials: TestimonialRow[];
+  };
+
+  const headline = about?.headline ?? "I make pictures the way I'd want to be remembered.";
+  const paragraphs = (about?.body ?? "").split(/\n\s*\n/).filter(Boolean);
   const image = about?.image_url ?? null;
 
-  const paragraphs = body.split(/\n\s*\n/).filter(Boolean);
-
   return (
-    <section className="pt-40 md:pt-48 pb-24 px-6 md:px-12">
-      <div className="mx-auto max-w-[1400px] grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-20 items-start">
-        <Reveal className="md:col-span-5 md:sticky md:top-32">
-          <div className="image-hover bg-muted aspect-[4/5] overflow-hidden">
-            {image ? (
-              <img
-                src={image}
-                alt="Portrait of the photographer"
-                loading="lazy"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs uppercase tracking-widest-xl">
-                Photo coming soon
-              </div>
-            )}
-          </div>
-          <p className="mt-4 text-[11px] uppercase tracking-widest-xl text-muted-foreground">
-            Founder & Photographer
-          </p>
-        </Reveal>
-
-        <div className="md:col-span-7 md:pt-12">
+    <>
+      <section className="px-5 md:px-10 pt-32 md:pt-40 pb-6">
+        <div className="mx-auto max-w-[1600px]">
           <Reveal>
-            <p className="text-[11px] uppercase tracking-widest-xl text-[var(--gold)] mb-4">
-              About the Studio
-            </p>
-            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-foreground leading-[1.05]">
-              {headline}
+            <p className="eyebrow mb-5">About me</p>
+            <h1 className="display-xl text-[12vw] leading-[0.9] md:text-[7vw]">
+              About Traced in Light
             </h1>
           </Reveal>
+        </div>
+      </section>
 
-          <div className="mt-12 space-y-6 text-base md:text-lg leading-relaxed text-foreground/85 max-w-xl font-light">
-            {paragraphs.map((p, i) => (
-              <Reveal key={i} delay={150 + i * 100}>
-                <p>{p}</p>
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal delay={500}>
-            <div className="mt-16 grid grid-cols-2 gap-8 max-w-md border-t border-border pt-10">
-              <div>
-                <p className="font-serif text-4xl text-foreground">{weddings}</p>
-                <p className="mt-1 text-[11px] uppercase tracking-widest-xl text-muted-foreground">
-                  Weddings Captured
-                </p>
-              </div>
-              <div>
-                <p className="font-serif text-4xl text-foreground">{years}</p>
-                <p className="mt-1 text-[11px] uppercase tracking-widest-xl text-muted-foreground">
-                  Behind the Lens
-                </p>
-              </div>
+      <section className="px-5 md:px-10 py-14 md:py-20">
+        <div className="mx-auto max-w-[1600px] grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-start">
+          <Reveal className="md:col-span-5">
+            <div className="image-hover bg-card aspect-[4/5]">
+              {image ? (
+                <img
+                  src={image}
+                  alt="Portrait of the photographer"
+                  loading="lazy"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center eyebrow">
+                  Photo coming soon
+                </div>
+              )}
             </div>
           </Reveal>
 
-          <Reveal delay={650}>
-            <Link
-              to="/contact"
-              className="mt-16 inline-flex items-center gap-3 bg-primary text-primary-foreground px-10 py-4 text-[11px] uppercase tracking-widest-xl hover:opacity-90 transition-opacity"
-            >
-              Work With Me
-            </Link>
-          </Reveal>
+          <div className="md:col-span-7">
+            <Reveal>
+              <h2 className="display-xl text-2xl md:text-4xl leading-tight">{headline}</h2>
+            </Reveal>
+            <div className="mt-8 space-y-6 max-w-2xl text-base font-light leading-relaxed text-muted-foreground">
+              {paragraphs.map((p, i) => (
+                <Reveal key={i} delay={120 + i * 90}>
+                  <p>{p}</p>
+                </Reveal>
+              ))}
+            </div>
+            <Reveal delay={400}>
+              <Link to="/contact" className="mt-12 btn-pill btn-purple">
+                Work With Me <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </Reveal>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <Testimonials items={testimonials} />
+    </>
   );
 }
