@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useRef } from "react";
 import { Reveal } from "@/components/Reveal";
-import { Lightbox } from "@/components/Lightbox";
-import { listEvents, listRecentPhotos } from "@/lib/portfolio-db.functions";
+import { FAQ } from "@/components/FAQ";
+import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
+import { listEvents, listFaqs, type FaqRow } from "@/lib/portfolio-db.functions";
 
-type Tab = "all" | "portrait" | "wedding" | "event";
+const SITE = "https://tracer-portraits-studio.lovable.app";
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
@@ -20,218 +21,153 @@ export const Route = createFileRoute("/portfolio")({
         content:
           "Browse portrait, wedding, and event galleries — full stories from real sessions in Accra and beyond.",
       },
-      { property: "og:url", content: "https://tracer-portraits-studio.lovable.app/portfolio" },
+      { property: "og:url", content: `${SITE}/portfolio` },
     ],
-    links: [{ rel: "canonical", href: "https://tracer-portraits-studio.lovable.app/portfolio" }],
+    links: [{ rel: "canonical", href: `${SITE}/portfolio` }],
   }),
   loader: async () => {
-    const [events, recent] = await Promise.all([listEvents(), listRecentPhotos()]);
-    return { events, recent };
+    const [events, faqs] = await Promise.all([listEvents(), listFaqs()]);
+    return { events, faqs };
   },
+  errorComponent: () => (
+    <div className="min-h-screen flex items-center justify-center pt-32 px-6">
+      <p>Couldn&apos;t load the portfolio.</p>
+    </div>
+  ),
+  notFoundComponent: () => null,
   component: PortfolioPage,
 });
 
-const categoryLabel: Record<string, string> = {
-  portrait: "Portrait",
-  wedding: "Wedding",
-  event: "Event",
+type Ev = {
+  id: string;
+  name: string;
+  category: string;
+  date: string;
+  cover_url: string | null;
+  photo_count: number;
 };
 
-const SPANS = [
-  { span: "md:col-span-7", ratio: "aspect-[4/5]" },
-  { span: "md:col-span-5 md:mt-16", ratio: "aspect-[4/5]" },
-  { span: "md:col-span-5", ratio: "aspect-[3/4]" },
-  { span: "md:col-span-7 md:mt-12", ratio: "aspect-[4/3]" },
-  { span: "md:col-span-6", ratio: "aspect-square" },
-  { span: "md:col-span-6 md:mt-12", ratio: "aspect-[4/5]" },
+const SECTIONS: { key: string; label: string }[] = [
+  { key: "portrait", label: "Portraits" },
+  { key: "wedding", label: "Weddings" },
+  { key: "event", label: "Events" },
 ];
 
-function matchesTab(cat: string, tab: Tab) {
-  if (tab === "all") return true;
-  return cat === tab;
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "long" });
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+function CategoryRow({ label, events }: { label: string; events: Ev[] }) {
+  const scroller = useRef<HTMLDivElement>(null);
+  if (!events.length) return null;
+
+  const scrollBy = (dir: number) =>
+    scroller.current?.scrollBy({ left: dir * 420, behavior: "smooth" });
+
+  return (
+    <section className="px-5 md:px-10 py-14 md:py-20">
+      <div className="mx-auto max-w-[1600px]">
+        <Reveal>
+          <div className="flex flex-wrap items-end justify-between gap-6 border-b border-border pb-6">
+            <h2 className="display-xl text-3xl md:text-5xl">{label}</h2>
+            <div className="flex items-center gap-3">
+              <span className="eyebrow">
+                {events.length} {events.length === 1 ? "collection" : "collections"}
+              </span>
+              <button
+                onClick={() => scrollBy(-1)}
+                aria-label={`Previous ${label}`}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => scrollBy(1)}
+                aria-label={`Next ${label}`}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </Reveal>
+
+        <div
+          ref={scroller}
+          className="mt-8 flex gap-5 overflow-x-auto scrollbar-none snap-x snap-mandatory"
+        >
+          {events.map((ev, i) => (
+            <Reveal
+              key={ev.id}
+              delay={i * 90}
+              className="snap-start shrink-0 w-[85%] sm:w-[48%] lg:w-[32%]"
+            >
+              <Link to="/portfolio/$eventId" params={{ eventId: ev.id }} className="group block">
+                <div className="image-hover bg-card">
+                  {ev.cover_url ? (
+                    <img
+                      src={ev.cover_url}
+                      alt={ev.name}
+                      loading="lazy"
+                      className="w-full aspect-[4/5] object-cover"
+                    />
+                  ) : (
+                    <div className="w-full aspect-[4/5]" />
+                  )}
+                </div>
+                <div className="mt-4 flex items-start justify-between gap-6">
+                  <div>
+                    <h3 className="display-xl text-lg md:text-xl">{ev.name}</h3>
+                    <p className="mt-2 eyebrow">
+                      {formatDate(ev.date)} · {ev.photo_count} photos
+                    </p>
+                  </div>
+                  <ArrowUpRight className="mt-1 h-5 w-5 shrink-0 text-primary transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                </div>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function PortfolioPage() {
-  const { events, recent } = Route.useLoaderData() as {
-    events: Array<{ id: string; name: string; category: string; date: string; cover_url: string | null; photo_count: number }>;
-    recent: Array<{ id: string; url: string; alt: string; event_name: string | null; category: string | null }>;
-  };
-  const [tab, setTab] = useState<Tab>("all");
-  const [lbIdx, setLbIdx] = useState<number | null>(null);
-
-  const filtered = useMemo(() => events.filter((e) => matchesTab(e.category, tab)), [events, tab]);
-  const tabs: { key: Tab; label: string }[] = [
-    { key: "all", label: "All Work" },
-    { key: "portrait", label: "Portraits" },
-    { key: "wedding", label: "Weddings" },
-    { key: "event", label: "Events" },
-  ];
-  const lbImages = recent.map((p) => ({ src: p.url, alt: p.event_name ?? "" }));
+  const { events, faqs } = Route.useLoaderData() as { events: Ev[]; faqs: FaqRow[] };
 
   return (
     <>
-      <section className="pt-40 md:pt-48 pb-12 px-6 md:px-12">
+      <section className="px-5 md:px-10 pt-32 md:pt-40 pb-4">
         <div className="mx-auto max-w-[1600px]">
           <Reveal>
-            <p className="text-[11px] uppercase tracking-widest-xl text-[var(--gold)] mb-4">
-              The Archive
-            </p>
-            <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl text-foreground leading-[1.05]">
-              Portfolio
+            <p className="eyebrow mb-5">The archive</p>
+            <h1 className="display-xl text-[12vw] leading-[0.9] md:text-[7vw]">
+              Visual Poetry in Pixels
             </h1>
-            <p className="mt-8 max-w-xl text-muted-foreground leading-relaxed">
-              A small, considered selection. Each frame chosen for the truth it carries — not the
-              polish it performs.
+            <p className="mt-8 max-w-xl text-base font-light leading-relaxed text-muted-foreground">
+              A considered selection, grouped by the kind of story it tells. Open any collection
+              to see the full gallery.
             </p>
-          </Reveal>
-
-          <Reveal delay={150}>
-            <div className="mt-14 flex flex-wrap gap-x-8 gap-y-3 border-t border-border pt-8">
-              {tabs.map((t) => (
-                <button
-                  key={t.key}
-                  onClick={() => setTab(t.key)}
-                  className={`text-[11px] uppercase tracking-widest-xl transition-colors ${
-                    tab === t.key
-                      ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {t.label}
-                  {tab === t.key && (
-                    <span className="ml-2 inline-block h-px w-6 align-middle bg-[var(--gold)]" />
-                  )}
-                </button>
-              ))}
-            </div>
           </Reveal>
         </div>
       </section>
 
-      {recent.length > 0 && (
-        <section className="px-6 md:px-12 pb-20">
-          <div className="mx-auto max-w-[1600px]">
-            <Reveal>
-              <div className="flex items-baseline justify-between mb-6">
-                <h2 className="text-[11px] uppercase tracking-widest-xl text-foreground">
-                  Recently Added
-                </h2>
-              </div>
-            </Reveal>
-            <Reveal delay={120}>
-              <div className="-mx-6 md:-mx-12 px-6 md:px-12 overflow-x-auto scrollbar-none">
-                <div className="flex gap-4 md:gap-6 pb-2">
-                  {recent.map((p, i) => (
-                    <button
-                      key={p.id}
-                      onClick={() => setLbIdx(i)}
-                      className="group relative shrink-0 image-hover text-left"
-                      style={{ width: "clamp(220px, 28vw, 340px)" }}
-                    >
-                      <img
-                        src={p.url}
-                        alt={p.alt}
-                        loading="lazy"
-                        className="w-full aspect-[4/5] object-cover"
-                      />
-                      <div className="mt-3 flex items-center justify-between text-[11px] uppercase tracking-widest-xl text-muted-foreground">
-                        <span className="truncate pr-3">{p.event_name}</span>
-                        {p.category && (
-                          <span className="text-[var(--gold)] shrink-0">
-                            {categoryLabel[p.category]}
-                          </span>
-                        )}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </Reveal>
-          </div>
-        </section>
+      {events.length === 0 && (
+        <p className="py-24 text-center text-muted-foreground">
+          Collections will appear here once added.
+        </p>
       )}
 
-      <section className="px-6 md:px-12 pb-32">
-        <div className="mx-auto max-w-[1600px]">
-          <Reveal>
-            <div className="flex items-baseline justify-between mb-8 border-t border-border pt-8">
-              <h2 className="text-[11px] uppercase tracking-widest-xl text-foreground">
-                Events & Sessions
-              </h2>
-              <span className="text-[11px] uppercase tracking-widest-xl text-muted-foreground">
-                {filtered.length} {filtered.length === 1 ? "collection" : "collections"}
-              </span>
-            </div>
-          </Reveal>
+      {SECTIONS.map((s) => (
+        <CategoryRow
+          key={s.key}
+          label={s.label}
+          events={events.filter((e) => e.category === s.key)}
+        />
+      ))}
 
-          {filtered.length === 0 ? (
-            <p className="text-muted-foreground py-20 text-center">
-              No events to show yet — check back soon.
-            </p>
-          ) : (
-            <div className="grid grid-cols-12 gap-4 md:gap-8">
-              {filtered.map((ev, i) => {
-                const layout = SPANS[i % SPANS.length];
-                return (
-                  <Reveal
-                    key={ev.id}
-                    className={`col-span-12 ${layout.span}`}
-                    delay={(i % 3) * 120}
-                  >
-                    <Link
-                      to="/portfolio/$eventId"
-                      params={{ eventId: ev.id }}
-                      className="group block image-hover"
-                    >
-                      {ev.cover_url ? (
-                        <img
-                          src={ev.cover_url}
-                          alt={ev.name}
-                          loading="lazy"
-                          className={`w-full ${layout.ratio} object-cover`}
-                        />
-                      ) : (
-                        <div className={`w-full ${layout.ratio} bg-muted`} />
-                      )}
-                      <div className="mt-4 flex items-start justify-between gap-6">
-                        <div>
-                          <h3 className="font-serif text-2xl md:text-3xl text-foreground leading-tight">
-                            {ev.name}
-                          </h3>
-                          <p className="mt-2 text-[11px] uppercase tracking-widest-xl text-muted-foreground">
-                            {formatDate(ev.date)}
-                          </p>
-                        </div>
-                        <span className="text-[11px] uppercase tracking-widest-xl text-[var(--gold)] shrink-0 mt-2">
-                          {categoryLabel[ev.category]}
-                        </span>
-                      </div>
-                    </Link>
-                  </Reveal>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </section>
-
-      <Lightbox
-        images={lbImages}
-        index={lbIdx}
-        onClose={() => setLbIdx(null)}
-        onPrev={() =>
-          setLbIdx((i) => (i === null ? null : (i - 1 + recent.length) % recent.length))
-        }
-        onNext={() => setLbIdx((i) => (i === null ? null : (i + 1) % recent.length))}
-      />
+      <FAQ items={faqs} />
     </>
   );
 }
