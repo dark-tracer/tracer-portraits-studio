@@ -68,8 +68,10 @@
   --input: oklch(0.28 0 0);
   --ring: oklch(0.524 0.243 293.9);
 
-  /* legacy accent alias now maps to purple */
-  --gold: oklch(0.62 0.21 293.9);
+  /* warm gold accent used on buttons and small highlights */
+  --gold: oklch(0.83 0.135 87);
+  --gold-strong: oklch(0.74 0.14 82);
+  --gold-foreground: oklch(0.18 0.02 80);
 }
 
 @layer base {
@@ -250,20 +252,30 @@
   font-weight: 500;
   transition: all 0.3s ease;
 }
-.btn-purple {
-  background: var(--primary);
-  color: var(--primary-foreground);
+.btn-purple,
+.btn-gold {
+  background: linear-gradient(180deg, var(--gold) 0%, var(--gold-strong) 100%);
+  color: var(--gold-foreground);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--gold) 60%, transparent);
 }
-.btn-purple:hover {
-  filter: brightness(1.12);
+.btn-purple:hover,
+.btn-gold:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 0 24px color-mix(in oklab, var(--gold) 35%, transparent);
 }
-.btn-outline-light {
-  border: 1px solid color-mix(in oklab, var(--foreground) 45%, transparent);
-  color: var(--foreground);
+.btn-outline-light,
+.btn-outline-gold {
+  border: 1px solid color-mix(in oklab, var(--gold) 55%, transparent);
+  color: var(--gold);
 }
-.btn-outline-light:hover {
-  background: var(--foreground);
-  color: var(--background);
+.btn-outline-light:hover,
+.btn-outline-gold:hover {
+  background: var(--gold);
+  color: var(--gold-foreground);
+}
+.icon-btn-gold {
+  background: var(--gold);
+  color: var(--gold-foreground);
 }
 
 .watermark-text {
