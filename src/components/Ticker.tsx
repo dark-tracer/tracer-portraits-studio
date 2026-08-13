@@ -1,11 +1,14 @@
+import { useCopy } from "@/hooks/use-copy";
+
 export function Ticker() {
-  const items = [
-    "Portrait Photography",
-    "Wedding Photography",
-    "Event Photography",
-    "Graduation Photography",
-  ];
+  const t = useCopy();
+  const items = t("ticker.items")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
   const sequence = [...items, ...items, ...items];
+
+  if (!items.length) return null;
 
   return (
     <div className="relative overflow-hidden border-y border-border bg-card/40 py-4">
@@ -18,7 +21,7 @@ export function Ticker() {
                 className="flex items-center gap-6 px-6 text-[11px] uppercase tracking-widest-xl text-muted-foreground whitespace-nowrap"
               >
                 {label}
-                <span className="text-primary">&#10022;</span>
+                <span className="text-[var(--gold)]">&#10022;</span>
               </span>
             ))}
           </div>

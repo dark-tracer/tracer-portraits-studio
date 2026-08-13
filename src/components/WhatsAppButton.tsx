@@ -1,8 +1,9 @@
-const PHONE = "233502605560";
-const MESSAGE = "Hi Tracer, I'd like to inquire about your photography services.";
+import { useCopy } from "@/hooks/use-copy";
 
 export function WhatsAppButton() {
-  const href = `https://wa.me/${PHONE}?text=${encodeURIComponent(MESSAGE)}`;
+  const t = useCopy();
+  const phone = t("site.whatsapp.phone").replace(/[^0-9]/g, "");
+  const href = `https://wa.me/${phone}?text=${encodeURIComponent(t("site.whatsapp.message"))}`;
 
   return (
     <a
