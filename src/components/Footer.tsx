@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Mail, ArrowUpRight } from "lucide-react";
+import { useCopy } from "@/hooks/use-copy";
 
 const columns: { title: string; links: { to: string; label: string }[] }[] = [
   {
@@ -21,30 +22,32 @@ const columns: { title: string; links: { to: string; label: string }[] }[] = [
 ];
 
 export function Footer() {
+  const t = useCopy();
+
   return (
     <footer className="relative overflow-hidden border-t border-border">
       {/* Oversized watermark */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center">
-        <span className="watermark-text text-[22vw] translate-y-[18%]">Traced in Light</span>
+        <span className="watermark-text text-[22vw] translate-y-[18%]">{t("footer.watermark")}</span>
       </div>
 
       <div className="relative mx-auto max-w-[1600px] px-6 md:px-12 py-20 md:py-28">
         {/* CTA */}
         <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="eyebrow mb-6">A more meaningful home for photography</p>
+            <p className="eyebrow mb-6">{t("footer.eyebrow")}</p>
             <h2 className="display-xl text-5xl md:text-7xl lg:text-8xl">
               <span className="flex items-center gap-5">
-                Let&apos;s
+                {t("footer.heading.line1")}
                 <Link
                   to="/contact"
                   aria-label="Go to contact page"
-                  className="inline-flex h-12 w-16 md:h-14 md:w-20 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105"
+                  className="icon-btn-gold inline-flex h-12 w-16 md:h-14 md:w-20 items-center justify-center rounded-full transition-transform hover:scale-105"
                 >
                   <ArrowUpRight className="h-6 w-6" />
                 </Link>
               </span>
-              <span className="block">Work Together</span>
+              <span className="block">{t("footer.heading.line2")}</span>
             </h2>
           </div>
 
@@ -68,30 +71,30 @@ export function Footer() {
 
         <div className="mt-20 border-t border-border pt-8 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <span className="text-[11px] uppercase tracking-widest-xl text-muted-foreground">
-            © {new Date().getFullYear()} Traced in Light Studio
+            © {new Date().getFullYear()} {t("footer.copyright")}
           </span>
 
           <div className="flex items-center gap-3">
             <a
-              href="https://www.instagram.com/trac.erphotography?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+              href={t("site.instagram.url")}
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-[var(--gold)] hover:text-[var(--gold)]"
             >
               <Instagram className="h-4 w-4" />
             </a>
             <a
-              href="mailto:bernieamponsah2@gmail.com"
+              href={`mailto:${t("site.email")}`}
               aria-label="Email"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-[var(--gold)] hover:text-[var(--gold)]"
             >
               <Mail className="h-4 w-4" />
             </a>
           </div>
 
           <span className="text-[11px] uppercase tracking-widest-xl text-muted-foreground">
-            Accra, Ghana
+            {t("site.location")}
           </span>
         </div>
       </div>
