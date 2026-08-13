@@ -47,6 +47,36 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_read: boolean
+          message: string
+          name: string
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_read?: boolean
+          message: string
+          name: string
+          subject?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          name?: string
+          subject?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           category: Database["public"]["Enums"]["event_category"]
@@ -198,6 +228,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      site_content: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
       }
       testimonials: {
         Row: {

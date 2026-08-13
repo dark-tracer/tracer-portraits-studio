@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Reveal } from "@/components/Reveal";
 import { Plus } from "lucide-react";
+import { useCopy } from "@/hooks/use-copy";
 import type { FaqRow } from "@/lib/portfolio-db.functions";
 
 export function FAQ({ items }: { items: FaqRow[] }) {
   const [open, setOpen] = useState<number | null>(null);
+  const t = useCopy();
 
   if (!items.length) return null;
 
@@ -15,9 +17,9 @@ export function FAQ({ items }: { items: FaqRow[] }) {
     <section className="px-6 md:px-12 py-24 md:py-32">
       <div className="mx-auto max-w-[1600px]">
         <Reveal>
-          <p className="eyebrow mb-4">FAQ&apos;s</p>
+          <p className="eyebrow mb-4">{t("faq.eyebrow")}</p>
           <h2 className="display-xl text-3xl md:text-5xl border-b border-border pb-8">
-            Frequently Asked Questions
+            {t("faq.heading")}
           </h2>
         </Reveal>
 
@@ -40,7 +42,7 @@ export function FAQ({ items }: { items: FaqRow[] }) {
                           {f.question}
                         </span>
                         <Plus
-                          className={`mt-1 h-4 w-4 shrink-0 text-primary transition-transform duration-300 ${
+                          className={`mt-1 h-4 w-4 shrink-0 text-[var(--gold)] transition-transform duration-300 ${
                             isOpen ? "rotate-45" : ""
                           }`}
                         />

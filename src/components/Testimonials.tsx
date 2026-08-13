@@ -1,10 +1,12 @@
 import { useRef } from "react";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
+import { useCopy } from "@/hooks/use-copy";
 import type { TestimonialRow } from "@/lib/portfolio-db.functions";
 
 export function Testimonials({ items }: { items: TestimonialRow[] }) {
   const scroller = useRef<HTMLDivElement>(null);
+  const t = useCopy();
 
   if (!items.length) return null;
 
@@ -16,10 +18,10 @@ export function Testimonials({ items }: { items: TestimonialRow[] }) {
     <section className="px-6 md:px-12 py-24 md:py-32">
       <div className="mx-auto max-w-[1600px]">
         <Reveal>
-          <p className="eyebrow mb-4">Testimonials</p>
+          <p className="eyebrow mb-4">{t("testimonials.eyebrow")}</p>
           <div className="flex flex-wrap items-end justify-between gap-6 border-b border-border pb-8">
             <div>
-              <h2 className="display-xl text-3xl md:text-5xl">What My Clients Say</h2>
+              <h2 className="display-xl text-3xl md:text-5xl">{t("testimonials.heading")}</h2>
               <p className="mt-4 text-sm text-muted-foreground">
                 Total reviews
                 <span className="block text-foreground">{items.length}</span>
@@ -29,14 +31,14 @@ export function Testimonials({ items }: { items: TestimonialRow[] }) {
               <button
                 onClick={() => scrollBy(-1)}
                 aria-label="Previous testimonials"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-[var(--gold)] transition-colors"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
               <button
                 onClick={() => scrollBy(1)}
                 aria-label="Next testimonials"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-[var(--gold)] transition-colors"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
@@ -60,7 +62,7 @@ export function Testimonials({ items }: { items: TestimonialRow[] }) {
                 </figcaption>
                 <div className="mt-3 flex gap-1">
                   {Array.from({ length: 5 }).map((_, s) => (
-                    <Star key={s} className="h-3.5 w-3.5 fill-primary text-primary" />
+                    <Star key={s} className="h-3.5 w-3.5 fill-[var(--gold)] text-[var(--gold)]" />
                   ))}
                 </div>
                 <blockquote className="mt-5 text-sm leading-relaxed text-muted-foreground">

@@ -424,3 +424,73 @@ export const deleteFaq = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ============ SITE CONTENT (page text) ============
+export const adminListSiteContent = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { data } = await sb.from("site_content").select("key, value");
+    const map: Record<string, string> = {};
+    for (const row of data ?? []) map[row.key] = row.value ?? "";
+    return map;
+  });
+
+export const saveSiteContent = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        entries: z
+          .array(z.object({ key: z.string().min(1).max(120), value: z.string().max(5000) }))
+          .max(300),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    if (!data.entries.length) return { ok: true };
+    const { error } = await sb
+      .from("site_content")
+      .upsert(
+        data.entries.map((e) => ({ key: e.key, value: e.value, updated_at: new Date().toISOString() })),
+        { onConflict: "key" },
+      );
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// ============ CONTACT MESSAGES ============
+export const adminListMessages = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { data } = await sb
+      .from("contact_messages")
+      .select("*")
+      .order("created_at", { ascending: false });
+    return data ?? [];
+  });
+
+export const markMessageRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid(), is_read: z.boolean() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { error } = await sb
+      .from("contact_messages")
+      .update({ is_read: data.is_read })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { error } = await sb.from("contact_messages").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });

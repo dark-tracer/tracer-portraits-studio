@@ -4,8 +4,10 @@ import { Footer } from "@/components/Footer";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { Ticker } from "@/components/Ticker";
+import { getSiteContent } from "@/lib/site-content.functions";
 
 import appCss from "../styles.css?url";
+
 
 function NotFoundComponent() {
   return (
@@ -103,10 +105,12 @@ export const Route = createRootRoute({
       },
     ],
   }),
+  loader: async () => ({ copy: await getSiteContent() }),
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
 });
+
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
