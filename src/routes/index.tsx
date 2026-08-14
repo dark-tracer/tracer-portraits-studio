@@ -107,7 +107,7 @@ function Index() {
                   {t("home.hero.title")}
                 </h1>
               </div>
-              <Link to="/contact" className="btn-pill btn-purple self-start md:mb-4">
+              <Link to="/contact" className="btn-pill btn-gold self-start md:mb-4">
                 {t("home.hero.cta")} <ArrowUpRight className="h-4 w-4" />
               </Link>
             </div>

@@ -126,7 +126,7 @@ function PackageList({ title, items }: { title: string; items: PackageRow[] }) {
                   )}
                 </div>
                 <div className="md:col-span-2 md:text-right">
-                  <Link to="/contact" className="btn-pill btn-purple">
+                  <Link to="/contact" className="btn-pill btn-gold">
                     {t("services.book.cta")} <ArrowUpRight className="h-4 w-4" />
                   </Link>
                 </div>

@@ -175,7 +175,7 @@ function ContactPage() {
                     placeholder="Tell me about the day, the place, the people."
                   />
                 </div>
-                <button type="submit" className="btn-pill btn-purple w-fit">
+                <button type="submit" className="btn-pill btn-gold w-fit">
                   Send Message <ArrowUpRight className="h-4 w-4" />
                 </button>
               </form>

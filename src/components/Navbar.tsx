@@ -57,7 +57,7 @@ export function Navbar() {
           ))}
         </ul>
 
-        <Link to="/contact" className="hidden md:inline-flex btn-pill btn-purple">
+        <Link to="/contact" className="hidden md:inline-flex btn-pill btn-gold">
           Contact Me
         </Link>
 
@@ -89,7 +89,7 @@ export function Navbar() {
             </li>
           ))}
           <li>
-            <Link to="/contact" onClick={() => setOpen(false)} className="btn-pill btn-purple mt-4">
+            <Link to="/contact" onClick={() => setOpen(false)} className="btn-pill btn-gold mt-4">
               Contact Me
             </Link>
           </li>

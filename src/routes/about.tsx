@@ -97,7 +97,7 @@ function AboutPage() {
               ))}
             </div>
             <Reveal delay={400}>
-              <Link to="/contact" className="mt-12 btn-pill btn-purple">
+              <Link to="/contact" className="mt-12 btn-pill btn-gold">
                 {t("about.cta")} <ArrowUpRight className="h-4 w-4" />
               </Link>
             </Reveal>
