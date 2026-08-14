@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/Reveal";
+import { useCopy } from "@/hooks/use-copy";
 import { Testimonials } from "@/components/Testimonials";
 import { ArrowUpRight } from "lucide-react";
 import {
@@ -42,6 +43,7 @@ export const Route = createFileRoute("/about")({
 });
 
 function AboutPage() {
+  const t = useCopy();
   const { about, testimonials } = Route.useLoaderData() as {
     about: AboutContent | null;
     testimonials: TestimonialRow[];
@@ -56,9 +58,9 @@ function AboutPage() {
       <section className="px-5 md:px-10 pt-32 md:pt-40 pb-6">
         <div className="mx-auto max-w-[1600px]">
           <Reveal>
-            <p className="eyebrow mb-5">About me</p>
+            <p className="eyebrow mb-5">{t("about.eyebrow")}</p>
             <h1 className="display-xl text-[12vw] leading-[0.9] md:text-[7vw]">
-              About Traced in Light
+              {t("about.title")}
             </h1>
           </Reveal>
         </div>
@@ -77,7 +79,7 @@ function AboutPage() {
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center eyebrow">
-                  Photo coming soon
+                  {t("about.image.empty")}
                 </div>
               )}
             </div>
@@ -95,8 +97,8 @@ function AboutPage() {
               ))}
             </div>
             <Reveal delay={400}>
-              <Link to="/contact" className="mt-12 btn-pill btn-purple">
-                Work With Me <ArrowUpRight className="h-4 w-4" />
+              <Link to="/contact" className="mt-12 btn-pill btn-gold">
+                {t("about.cta")} <ArrowUpRight className="h-4 w-4" />
               </Link>
             </Reveal>
           </div>

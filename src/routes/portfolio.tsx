@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef } from "react";
 import { Reveal } from "@/components/Reveal";
+import { useCopy } from "@/hooks/use-copy";
 import { FAQ } from "@/components/FAQ";
 import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 import { listEvents, listFaqs, type FaqRow } from "@/lib/portfolio-db.functions";
@@ -77,14 +78,14 @@ function CategoryRow({ label, events }: { label: string; events: Ev[] }) {
               <button
                 onClick={() => scrollBy(-1)}
                 aria-label={`Previous ${label}`}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-[var(--gold)] transition-colors"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
               <button
                 onClick={() => scrollBy(1)}
                 aria-label={`Next ${label}`}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-[var(--gold)] transition-colors"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
@@ -134,6 +135,7 @@ function CategoryRow({ label, events }: { label: string; events: Ev[] }) {
 }
 
 function PortfolioPage() {
+  const t = useCopy();
   const { events, faqs } = Route.useLoaderData() as { events: Ev[]; faqs: FaqRow[] };
 
   return (
@@ -141,13 +143,12 @@ function PortfolioPage() {
       <section className="px-5 md:px-10 pt-32 md:pt-40 pb-4">
         <div className="mx-auto max-w-[1600px]">
           <Reveal>
-            <p className="eyebrow mb-5">The archive</p>
+            <p className="eyebrow mb-5">{t("portfolio.eyebrow")}</p>
             <h1 className="display-xl text-[12vw] leading-[0.9] md:text-[7vw]">
-              Visual Poetry in Pixels
+              {t("portfolio.title")}
             </h1>
             <p className="mt-8 max-w-xl text-base font-light leading-relaxed text-muted-foreground">
-              A considered selection, grouped by the kind of story it tells. Open any collection
-              to see the full gallery.
+              {t("portfolio.intro")}
             </p>
           </Reveal>
         </div>
@@ -155,14 +156,14 @@ function PortfolioPage() {
 
       {events.length === 0 && (
         <p className="py-24 text-center text-muted-foreground">
-          Collections will appear here once added.
+          {t("portfolio.empty")}
         </p>
       )}
 
       {SECTIONS.map((s) => (
         <CategoryRow
           key={s.key}
-          label={s.label}
+          label={t(`portfolio.section.${s.key}`)}
           events={events.filter((e) => e.category === s.key)}
         />
       ))}

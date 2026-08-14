@@ -28,9 +28,15 @@ import {
   createFaq,
   updateFaq,
   deleteFaq,
+  adminListSiteContent,
+  saveSiteContent,
+  adminListMessages,
+  markMessageRead,
+  deleteMessage,
 } from "@/lib/admin.functions";
+import { COPY_GROUPS, COPY_DEFAULTS } from "@/lib/site-copy";
 import { listEvents, listHero, getEvent } from "@/lib/portfolio-db.functions";
-import { Trash2, Upload, Plus, LogOut, X, Pencil } from "lucide-react";
+import { Trash2, Upload, Plus, LogOut, X, Pencil, Mail, RotateCcw } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -38,7 +44,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Tab = "events" | "hero" | "about" | "packages" | "testimonials" | "faqs";
+type Tab = "events" | "hero" | "about" | "packages" | "testimonials" | "faqs" | "content" | "messages";
 type Category = "portrait" | "wedding" | "event";
 
 function AdminPage() {
@@ -81,6 +87,8 @@ function AdminPage() {
     { key: "packages", label: "Packages" },
     { key: "testimonials", label: "Testimonials" },
     { key: "faqs", label: "FAQs" },
+    { key: "content", label: "Page Text" },
+    { key: "messages", label: "Inbox" },
   ];
 
   return (
@@ -124,6 +132,8 @@ function AdminPage() {
         {tab === "packages" && <PackagesTab />}
         {tab === "testimonials" && <TestimonialsTab />}
         {tab === "faqs" && <FaqsTab />}
+        {tab === "content" && <SiteContentTab />}
+        {tab === "messages" && <MessagesTab />}
       </div>
     </section>
   );
@@ -1204,5 +1214,180 @@ function FaqForm({
         </button>
       </div>
     </form>
+  );
+}
+
+// ============ PAGE TEXT TAB ============
+function SiteContentTab() {
+  const load = useServerFn(adminListSiteContent);
+  const save = useServerFn(saveSiteContent);
+  const [values, setValues] = useState<Record<string, string>>({});
+  const [status, setStatus] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    load().then((map: Record<string, string>) => {
+      const merged: Record<string, string> = { ...COPY_DEFAULTS };
+      for (const [k, v] of Object.entries(map ?? {})) if (v !== "") merged[k] = v;
+      setValues(merged);
+    });
+  }, [load]);
+
+  const onSave = async () => {
+    setSaving(true);
+    setStatus(null);
+    try {
+      const entries = Object.entries(values).map(([key, value]) => ({ key, value }));
+      await save({ data: { entries } });
+      setStatus("Saved. Refresh the site to see the changes.");
+    } catch {
+      setStatus("Could not save. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div>
+          <h2 className="font-serif text-2xl">Page Text</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Every heading, paragraph, label and button on the public pages.
+          </p>
+        </div>
+        <button
+          onClick={onSave}
+          disabled={saving}
+          className="btn-pill btn-gold disabled:opacity-60"
+        >
+          {saving ? "Saving…" : "Save all changes"}
+        </button>
+      </div>
+      {status && <p className="mb-6 text-sm text-[var(--gold)]">{status}</p>}
+
+      <div className="grid gap-10">
+        {COPY_GROUPS.map((group) => (
+          <div key={group.title} className="border border-border p-6">
+            <h3 className="text-[11px] uppercase tracking-widest-xl text-[var(--gold)] mb-5">
+              {group.title}
+            </h3>
+            <div className="grid gap-5 md:grid-cols-2">
+              {group.fields.map((f) => (
+                <label key={f.key} className="block">
+                  <span className="text-[11px] uppercase tracking-widest-xl text-muted-foreground">
+                    {f.label}
+                  </span>
+                  {f.multiline ? (
+                    <textarea
+                      rows={3}
+                      value={values[f.key] ?? ""}
+                      onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+                      className="mt-2 w-full border border-border bg-transparent p-3 text-sm resize-y"
+                    />
+                  ) : (
+                    <input
+                      value={values[f.key] ?? ""}
+                      onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+                      className="mt-2 w-full border border-border bg-transparent p-3 text-sm"
+                    />
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setValues((v) => ({ ...v, [f.key]: f.default }))}
+                    className="mt-1 inline-flex items-center gap-1 text-[10px] uppercase tracking-widest-xl text-muted-foreground hover:text-foreground"
+                  >
+                    <RotateCcw className="h-3 w-3" /> Reset
+                  </button>
+                </label>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ============ INBOX TAB ============
+function MessagesTab() {
+  const load = useServerFn(adminListMessages);
+  const mark = useServerFn(markMessageRead);
+  const remove = useServerFn(deleteMessage);
+  const [items, setItems] = useState<any[]>([]);
+
+  const refresh = useCallback(() => load().then(setItems), [load]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  const unread = items.filter((m) => !m.is_read).length;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="font-serif text-2xl">
+          Inbox ({items.length}){unread > 0 && <span className="text-[var(--gold)]"> · {unread} new</span>}
+        </h2>
+      </div>
+
+      <div className="grid gap-4">
+        {items.map((m) => (
+          <div
+            key={m.id}
+            className={`border p-5 ${m.is_read ? "border-border" : "border-[var(--gold)]"}`}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
+                <p className="font-serif text-lg">
+                  {m.name} <span className="text-sm text-muted-foreground">· {m.email}</span>
+                </p>
+                {m.subject && (
+                  <p className="text-[11px] uppercase tracking-widest-xl text-muted-foreground mt-1">
+                    {m.subject}
+                  </p>
+                )}
+                <p className="mt-3 text-sm leading-relaxed whitespace-pre-wrap">{m.message}</p>
+                <p className="mt-3 text-[11px] uppercase tracking-widest-xl text-muted-foreground">
+                  {new Date(m.created_at).toLocaleString()}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <a
+                  aria-label="Reply by email"
+                  href={`mailto:${m.email}?subject=${encodeURIComponent("Re: " + (m.subject || "Your message"))}`}
+                  className="text-foreground/70 hover:text-foreground"
+                >
+                  <Mail className="h-4 w-4" />
+                </a>
+                <button
+                  onClick={async () => {
+                    await mark({ data: { id: m.id, is_read: !m.is_read } });
+                    refresh();
+                  }}
+                  className="text-[10px] uppercase tracking-widest-xl text-muted-foreground hover:text-foreground"
+                >
+                  {m.is_read ? "Mark unread" : "Mark read"}
+                </button>
+                <button
+                  aria-label="Delete"
+                  onClick={async () => {
+                    if (!confirm("Delete this message?")) return;
+                    await remove({ data: { id: m.id } });
+                    refresh();
+                  }}
+                  className="text-destructive hover:opacity-70"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+        {items.length === 0 && (
+          <p className="text-muted-foreground py-12 text-center">No messages yet.</p>
+        )}
+      </div>
+    </div>
   );
 }
