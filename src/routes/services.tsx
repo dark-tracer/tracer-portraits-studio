@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/Reveal";
+import { useCopy } from "@/hooks/use-copy";
 import { FAQ } from "@/components/FAQ";
 import { Testimonials } from "@/components/Testimonials";
 import { ArrowUpRight } from "lucide-react";
@@ -90,6 +91,7 @@ export const Route = createFileRoute("/services")({
 });
 
 function PackageList({ title, items }: { title: string; items: PackageRow[] }) {
+  const t = useCopy();
   if (!items.length) return null;
   return (
     <section className="px-5 md:px-10 py-12 md:py-16">
@@ -104,7 +106,7 @@ function PackageList({ title, items }: { title: string; items: PackageRow[] }) {
                 <div className="md:col-span-1 eyebrow">{String(i + 1).padStart(2, "0")}</div>
                 <div className="md:col-span-4">
                   <h3 className="display-xl text-xl md:text-2xl">{p.title}</h3>
-                  {p.starting && <p className="mt-2 text-sm text-primary">{p.starting}</p>}
+                  {p.starting && <p className="mt-2 text-sm text-[var(--gold)]">{p.starting}</p>}
                 </div>
                 <div className="md:col-span-5">
                   <p className="text-sm font-light leading-relaxed text-muted-foreground">
@@ -125,7 +127,7 @@ function PackageList({ title, items }: { title: string; items: PackageRow[] }) {
                 </div>
                 <div className="md:col-span-2 md:text-right">
                   <Link to="/contact" className="btn-pill btn-purple">
-                    Book <ArrowUpRight className="h-4 w-4" />
+                    {t("services.book.cta")} <ArrowUpRight className="h-4 w-4" />
                   </Link>
                 </div>
               </article>
@@ -138,6 +140,7 @@ function PackageList({ title, items }: { title: string; items: PackageRow[] }) {
 }
 
 function ServicesPage() {
+  const t = useCopy();
   const { packages, testimonials, faqs } = Route.useLoaderData() as {
     packages: PackageRow[];
     testimonials: TestimonialRow[];
@@ -154,24 +157,23 @@ function ServicesPage() {
       <section className="px-5 md:px-10 pt-32 md:pt-40 pb-4">
         <div className="mx-auto max-w-[1600px]">
           <Reveal>
-            <p className="eyebrow mb-5">Services & investment</p>
+            <p className="eyebrow mb-5">{t("services.eyebrow")}</p>
             <h1 className="display-xl text-[12vw] leading-[0.9] md:text-[7vw]">
-              Diverse Photography Offerings
+              {t("services.title")}
             </h1>
             <p className="mt-8 max-w-xl text-base font-light leading-relaxed text-muted-foreground">
-              Every session is shaped to its subject. The collections below are starting points —
-              your day, your story, your details inform the rest.
+              {t("services.intro")}
             </p>
           </Reveal>
         </div>
       </section>
 
-      <PackageList title="Portrait Sessions" items={portraits} />
-      <PackageList title="Weddings & Events" items={weddings} />
+      <PackageList title={t("services.portraits.heading")} items={portraits} />
+      <PackageList title={t("services.weddings.heading")} items={weddings} />
 
       {packages.length === 0 && (
         <p className="py-24 text-center text-muted-foreground">
-          Packages will appear here once added.
+          {t("services.empty")}
         </p>
       )}
 

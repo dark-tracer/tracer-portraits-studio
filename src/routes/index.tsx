@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Reveal } from "@/components/Reveal";
+import { useCopy } from "@/hooks/use-copy";
 import { Testimonials } from "@/components/Testimonials";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
 import {
@@ -85,6 +86,7 @@ function Mosaic({ images }: { images: Img[] }) {
 }
 
 function Index() {
+  const t = useCopy();
   const { hero, recent, packages, testimonials } = Route.useLoaderData() as {
     hero: Img[];
     recent: Array<Img & { event_name: string | null; category: string | null }>;
@@ -100,13 +102,13 @@ function Index() {
           <Reveal>
             <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="eyebrow mb-5">Portrait · Wedding · Events — Accra, Ghana</p>
+                <p className="eyebrow mb-5">{t("home.hero.eyebrow")}</p>
                 <h1 className="display-xl text-[15vw] leading-[0.88] md:text-[8vw]">
-                  Traced in Light
+                  {t("home.hero.title")}
                 </h1>
               </div>
               <Link to="/contact" className="btn-pill btn-purple self-start md:mb-4">
-                Let&apos;s Work Together <ArrowUpRight className="h-4 w-4" />
+                {t("home.hero.cta")} <ArrowUpRight className="h-4 w-4" />
               </Link>
             </div>
           </Reveal>
@@ -121,21 +123,20 @@ function Index() {
       <section className="px-5 md:px-10 py-24 md:py-32">
         <div className="mx-auto max-w-[1600px] grid grid-cols-1 md:grid-cols-12 gap-10">
           <div className="md:col-span-4">
-            <p className="eyebrow">About the studio</p>
+            <p className="eyebrow">{t("home.about.eyebrow")}</p>
           </div>
           <div className="md:col-span-8">
             <h2 className="display-xl text-3xl md:text-5xl leading-tight">
-              Every photograph is a quiet record of a moment that will not return.
+              {t("home.about.heading")}
             </h2>
             <p className="mt-8 max-w-2xl text-base font-light leading-relaxed text-muted-foreground">
-              I make pictures with intention — for people who want to remember the truth of
-              things, not a performance of it. Unhurried, honest, made to be lived with.
+              {t("home.about.body")}
             </p>
             <Link
               to="/about"
               className="mt-10 inline-flex items-center gap-3 whitespace-nowrap text-[12px] uppercase tracking-widest-xl link-underline"
             >
-              More about me <ArrowRight className="h-3.5 w-3.5" />
+              {t("home.about.link")} <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>
@@ -146,9 +147,9 @@ function Index() {
         <section className="px-5 md:px-10 pb-8">
           <div className="mx-auto max-w-[1600px]">
             <Reveal>
-              <p className="eyebrow mb-4">Services</p>
+              <p className="eyebrow mb-4">{t("home.services.eyebrow")}</p>
               <h2 className="display-xl text-3xl md:text-5xl border-b border-border pb-8">
-                What I Offer
+                {t("home.services.heading")}
               </h2>
             </Reveal>
             <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -157,7 +158,7 @@ function Index() {
                   <article className="surface-card h-full p-8 flex flex-col">
                     <span className="eyebrow">{String(i + 1).padStart(2, "0")}</span>
                     <h3 className="mt-8 display-xl text-2xl">{p.title}</h3>
-                    {p.starting && <p className="mt-2 text-sm text-primary">{p.starting}</p>}
+                    {p.starting && <p className="mt-2 text-sm text-[var(--gold)]">{p.starting}</p>}
                     <p className="mt-4 text-sm font-light leading-relaxed text-muted-foreground">
                       {p.description}
                     </p>
@@ -165,7 +166,7 @@ function Index() {
                       to="/services"
                       className="mt-8 inline-flex w-fit items-center gap-2 text-[11px] uppercase tracking-widest-xl link-underline"
                     >
-                      Learn more <ArrowUpRight className="h-3.5 w-3.5" />
+                      {t("home.services.link")} <ArrowUpRight className="h-3.5 w-3.5" />
                     </Link>
                   </article>
                 </Reveal>
@@ -180,11 +181,11 @@ function Index() {
         <section className="px-5 md:px-10 py-24 md:py-32">
           <div className="mx-auto max-w-[1600px]">
             <Reveal>
-              <p className="eyebrow mb-4">Portfolio</p>
+              <p className="eyebrow mb-4">{t("home.recent.eyebrow")}</p>
               <div className="flex flex-wrap items-end justify-between gap-6 border-b border-border pb-8">
-                <h2 className="display-xl text-3xl md:text-5xl">Recently Added</h2>
+                <h2 className="display-xl text-3xl md:text-5xl">{t("home.recent.heading")}</h2>
                 <Link to="/portfolio" className="btn-pill btn-outline-light">
-                  View all work <ArrowUpRight className="h-4 w-4" />
+                  {t("home.recent.cta")} <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </div>
             </Reveal>
@@ -204,7 +205,7 @@ function Index() {
                     <div className="mt-4 flex items-center justify-between gap-4">
                       <span className="text-sm text-foreground truncate">{p.event_name}</span>
                       {p.category && (
-                        <span className="eyebrow shrink-0 text-primary">{p.category}</span>
+                        <span className="eyebrow shrink-0 text-[var(--gold)]">{p.category}</span>
                       )}
                     </div>
                   </Link>
