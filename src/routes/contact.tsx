@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useState, type FormEvent } from "react";
 import { Reveal } from "@/components/Reveal";
-import { Instagram, Mail, MapPin, Check, ArrowUpRight } from "lucide-react";
+import { useCopy } from "@/hooks/use-copy";
+import { Instagram, Mail, MapPin, Check, ArrowUpRight, Loader2 } from "lucide-react";
 import { listHero } from "@/lib/portfolio-db.functions";
+import { submitContactMessage } from "@/lib/site-content.functions";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -33,16 +36,37 @@ export const Route = createFileRoute("/contact")({
 });
 
 const inputClass =
-  "w-full border-0 border-b border-border bg-transparent py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-colors";
+  "w-full border-0 border-b border-border bg-transparent py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-[var(--gold)] focus:outline-none transition-colors";
 
 function ContactPage() {
+  const t = useCopy();
   const hero = Route.useLoaderData() as Array<{ id: string; url: string; alt: string }>;
   const cover = hero[0]?.url ?? null;
+  const send = useServerFn(submitContactMessage);
   const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSent(true);
+    const fd = new FormData(e.currentTarget);
+    setBusy(true);
+    setError(null);
+    try {
+      await send({
+        data: {
+          name: String(fd.get("name") ?? ""),
+          email: String(fd.get("email") ?? ""),
+          subject: String(fd.get("subject") ?? ""),
+          message: String(fd.get("message") ?? ""),
+        },
+      });
+      setSent(true);
+    } catch {
+      setError("Something went wrong. Please try again or email me directly.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -50,9 +74,9 @@ function ContactPage() {
       <section className="px-5 md:px-10 pt-32 md:pt-40 pb-4">
         <div className="mx-auto max-w-[1600px]">
           <Reveal>
-            <p className="eyebrow mb-5">Contact</p>
+            <p className="eyebrow mb-5">{t("contact.eyebrow")}</p>
             <h1 className="display-xl text-[12vw] leading-[0.9] md:text-[7vw]">
-              Get in Touch With Me
+              {t("contact.title")}
             </h1>
           </Reveal>
 
@@ -77,41 +101,40 @@ function ContactPage() {
           <div className="md:col-span-5">
             <Reveal>
               <h2 className="display-xl text-2xl md:text-4xl leading-tight">
-                Let&apos;s plan something honest together.
+                {t("contact.heading")}
               </h2>
               <p className="mt-6 max-w-md text-sm font-light leading-relaxed text-muted-foreground">
-                Tell me a little about what you&apos;re planning. I respond personally to every
-                message — usually within two business days.
+                {t("contact.body")}
               </p>
             </Reveal>
 
             <Reveal delay={180}>
               <div className="mt-12 space-y-5 text-sm">
                 <a
-                  href="https://www.instagram.com/trac.erphotography?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                  href={t("site.instagram.url")}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-4 text-foreground hover:text-primary transition-colors"
+                  className="flex items-center gap-4 text-foreground hover:text-[var(--gold)] transition-colors"
                 >
                   <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border">
                     <Instagram className="h-4 w-4" />
                   </span>
-                  @trac.erphotography
+                  {t("site.instagram.handle")}
                 </a>
                 <a
-                  href="mailto:bernieamponsah2@gmail.com"
-                  className="flex items-center gap-4 text-foreground hover:text-primary transition-colors"
+                  href={`mailto:${t("site.email")}`}
+                  className="flex items-center gap-4 text-foreground hover:text-[var(--gold)] transition-colors"
                 >
                   <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border">
                     <Mail className="h-4 w-4" />
                   </span>
-                  bernieamponsah2@gmail.com
+                  {t("site.email")}
                 </a>
                 <p className="flex items-center gap-4 text-muted-foreground">
                   <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border">
                     <MapPin className="h-4 w-4" />
                   </span>
-                  Accra, Ghana
+                  {t("site.location")}
                 </p>
               </div>
             </Reveal>
@@ -120,13 +143,11 @@ function ContactPage() {
           <div className="md:col-span-7">
             {sent ? (
               <div className="surface-card flex flex-col items-start gap-4 p-10">
-                <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                <span className="icon-btn-gold inline-flex h-12 w-12 items-center justify-center rounded-full">
                   <Check className="h-5 w-5" />
                 </span>
-                <h3 className="display-xl text-2xl">Message received</h3>
-                <p className="text-sm text-muted-foreground">
-                  Thank you — I&apos;ll be in touch shortly.
-                </p>
+                <h3 className="display-xl text-2xl">{t("contact.success.title")}</h3>
+                <p className="text-sm text-muted-foreground">{t("contact.success.body")}</p>
               </div>
             ) : (
               <form onSubmit={onSubmit} suppressHydrationWarning className="grid gap-8">
@@ -135,7 +156,14 @@ function ContactPage() {
                     <label htmlFor="name" className="eyebrow">
                       Your name
                     </label>
-                    <input id="name" name="name" required className={inputClass} placeholder="Full name" />
+                    <input
+                      id="name"
+                      name="name"
+                      required
+                      maxLength={100}
+                      className={inputClass}
+                      placeholder="Full name"
+                    />
                   </div>
                   <div>
                     <label htmlFor="email" className="eyebrow">
@@ -146,6 +174,7 @@ function ContactPage() {
                       name="email"
                       type="email"
                       required
+                      maxLength={255}
                       className={inputClass}
                       placeholder="you@email.com"
                     />
@@ -158,6 +187,7 @@ function ContactPage() {
                   <input
                     id="subject"
                     name="subject"
+                    maxLength={200}
                     className={inputClass}
                     placeholder="Portrait session, wedding, event…"
                   />
@@ -171,12 +201,19 @@ function ContactPage() {
                     name="message"
                     rows={5}
                     required
+                    maxLength={4000}
                     className={`${inputClass} resize-none`}
                     placeholder="Tell me about the day, the place, the people."
                   />
                 </div>
-                <button type="submit" className="btn-pill btn-gold w-fit">
-                  Send Message <ArrowUpRight className="h-4 w-4" />
+                {error && <p className="text-sm text-destructive">{error}</p>}
+                <button type="submit" disabled={busy} className="btn-pill btn-gold w-fit disabled:opacity-60">
+                  {busy ? "Sending…" : t("contact.form.cta")}
+                  {busy ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ArrowUpRight className="h-4 w-4" />
+                  )}
                 </button>
               </form>
             )}
