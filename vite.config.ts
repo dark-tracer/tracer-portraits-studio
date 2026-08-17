@@ -1,30 +1,37 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { cloudflare } from '@cloudflare/vite-plugin';
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
+import { cloudflare } from '@cloudflare/vite-plugin';
 import path from 'path';
 
-export default defineConfig(({ command, mode }) => {
-  // Only use cloudflare plugin during dev or preview, NOT during build
-  const isBuild = command === 'build';
-  
-  return {
-    plugins: [
-      TanStackRouterVite(),
-      react(),
-      // Only include cloudflare plugin when not building with Nitro
-      ...(isBuild && process.env.CF_BUILD !== 'true' ? [] : [cloudflare()]),
-    ],
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, './src'),
+export default defineConfig({
+  plugins: [
+    // TanStack Router plugin - THIS IS CRITICAL for TanStack Start
+    TanStackRouterVite({
+      routesDirectory: './src/routes',
+      generatedRouteTree: './src/routeTree.gen.ts',
+    }),
+    react(),
+    // Remove cloudflare plugin during build to avoid the earlier error
+    // We'll handle Cloudflare deployment separately
+  ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  // TanStack Start uses SSR by default
+  ssr: {
+    noExternal: ['@tanstack/*'],
+  },
+  // This is important - TanStack Start doesn't use index.html
+  build: {
+    // Don't look for index.html
+    rollupOptions: {
+      input: {
+        client: './src/entry-client.tsx',
+        server: './src/entry-server.tsx',
       },
     },
-    build: {
-      // Ensure SSR build works correctly
-      rollupOptions: {
-        external: ['@cloudflare/vite-plugin'],
-      },
-    },
-  };
+  },
 });
