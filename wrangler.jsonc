@@ -1,7 +1,14 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "tanstack-start-app",
-  "compatibility_date": "2025-09-24",
+  "name": "tracer-portraits-studio", // ← Must match your project name
+  "main": "./.output/server/index.mjs",
+  "compatibility_date": "2026-08-17",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry",
+  "assets": {
+    "directory": "./.output/public",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true },
+  "workers_dev": true,
+  "preview_urls": true
 }
