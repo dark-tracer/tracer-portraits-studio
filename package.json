@@ -1,9 +1,6 @@
 {
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build && vite build --ssr",
-    "build:client": "vite build",
-    "build:server": "vite build --ssr",
-    "deploy": "npm run build && npx wrangler deploy"
+    "install": "bun install",
+    "build": "bun install && vite build"
   }
 }
