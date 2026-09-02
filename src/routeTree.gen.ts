@@ -61,9 +61,9 @@ const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioEventIdRoute = PortfolioEventIdRouteImport.update({
-  id: '/portfolio/$eventId',
-  path: '/portfolio/$eventId',
-  getParentRoute: () => rootRouteImport,
+  id: '/$eventId',
+  path: '/$eventId',
+  getParentRoute: () => PortfolioRoute,
 } as any)
 const ApiPublicImgSplatRoute = ApiPublicImgSplatRouteImport.update({
   id: '/api/public/img/$',
@@ -155,7 +155,6 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   ServicesRoute: typeof ServicesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  PortfolioEventIdRoute: typeof PortfolioEventIdRoute
   PortfolioIndexRoute: typeof PortfolioIndexRoute
   ApiPublicImgSplatRoute: typeof ApiPublicImgSplatRoute
 }
@@ -220,10 +219,10 @@ declare module '@tanstack/react-router' {
     }
     '/portfolio/$eventId': {
       id: '/portfolio/$eventId'
-      path: '/portfolio/$eventId'
+      path: '/$eventId'
       fullPath: '/portfolio/$eventId'
       preLoaderRoute: typeof PortfolioEventIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PortfolioRoute
     }
     '/api/public/img/$': {
       id: '/api/public/img/$'
@@ -243,7 +242,6 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   ServicesRoute: ServicesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  PortfolioEventIdRoute: PortfolioEventIdRoute,
   PortfolioIndexRoute: PortfolioIndexRoute,
   ApiPublicImgSplatRoute: ApiPublicImgSplatRoute,
 }
