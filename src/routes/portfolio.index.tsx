@@ -8,7 +8,7 @@ import { listEvents, listFaqs, type FaqRow } from "@/lib/portfolio-db.functions"
 
 const SITE = "https://tracer-portraits-studio.lovable.app";
 
-export const Route = createFileRoute("/portfolio")({
+export const Route = createFileRoute("/portfolio/")({
   head: () => ({
     meta: [
       { title: "Portfolio — Traced in Light" },
