@@ -51,33 +51,50 @@ export const Route = createFileRoute("/")({
 
 type Img = { id: string; url: string; alt: string };
 
-function Mosaic({ images }: { images: Img[] }) {
-  const slots = [
-    "col-span-6 md:col-span-3 aspect-[3/4]",
-    "col-span-6 md:col-span-3 aspect-[3/4] md:mt-10",
-    "col-span-12 md:col-span-3 aspect-[4/5]",
-    "col-span-6 md:col-span-3 aspect-[3/4] md:mt-10",
-    "col-span-6 md:col-span-3 aspect-square hidden md:block",
-    "col-span-6 md:col-span-3 aspect-[3/4] hidden md:block",
-  ];
-  const picks = images.slice(0, 6);
+const SLOTS = [
+  "col-span-6 md:col-span-3 aspect-[3/4]",
+  "col-span-6 md:col-span-3 aspect-[3/4] md:mt-10",
+  "col-span-12 md:col-span-3 aspect-[4/5]",
+  "col-span-6 md:col-span-3 aspect-[3/4] md:mt-10",
+  "col-span-6 md:col-span-3 aspect-square hidden md:block",
+  "col-span-6 md:col-span-3 aspect-[3/4] hidden md:block",
+];
 
-  if (picks.length === 0) {
+function Mosaic({ images }: { images: Img[] }) {
+  const [offset, setOffset] = useState(0);
+  const total = images.length;
+
+  useEffect(() => {
+    if (total <= SLOTS.length) return;
+    const id = setInterval(() => setOffset((o) => (o + SLOTS.length) % total), 6000);
+    return () => clearInterval(id);
+  }, [total]);
+
+  if (total === 0) {
     return (
       <div className="grid grid-cols-12 gap-3 md:gap-5">
-        {slots.slice(0, 3).map((s, i) => (
+        {SLOTS.slice(0, 3).map((s, i) => (
           <div key={i} className={`${s} rounded-[var(--radius)] bg-card`} />
         ))}
       </div>
     );
   }
 
+  const picks = SLOTS.slice(0, Math.min(total, SLOTS.length)).map(
+    (_, i) => images[(offset + i) % total],
+  );
+
   return (
     <div className="grid grid-cols-12 gap-3 md:gap-5">
       {picks.map((img, i) => (
-        <Reveal key={img.id} delay={i * 90} className={slots[i % slots.length]}>
+        <Reveal key={SLOTS[i]} delay={i * 90} className={SLOTS[i]}>
           <div className="image-hover h-full w-full">
-            <img src={img.url} alt={img.alt} className="h-full w-full object-cover" />
+            <img
+              key={img.id}
+              src={img.url}
+              alt={img.alt}
+              className="h-full w-full object-cover animate-fade-in"
+            />
           </div>
         </Reveal>
       ))}

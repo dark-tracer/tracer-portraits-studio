@@ -11,12 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
-import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
 import { Route as PortfolioEventIdRouteImport } from './routes/portfolio.$eventId'
 import { Route as ApiPublicImgSplatRouteImport } from './routes/api/public/img.$'
 
@@ -28,11 +28,6 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortfolioRoute = PortfolioRouteImport.update({
-  id: '/portfolio',
-  path: '/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -60,10 +55,15 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
+  id: '/portfolio/',
+  path: '/portfolio/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortfolioEventIdRoute = PortfolioEventIdRouteImport.update({
-  id: '/$eventId',
-  path: '/$eventId',
-  getParentRoute: () => PortfolioRoute,
+  id: '/portfolio/$eventId',
+  path: '/portfolio/$eventId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicImgSplatRoute = ApiPublicImgSplatRouteImport.update({
   id: '/api/public/img/$',
@@ -77,10 +77,10 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/portfolio': typeof PortfolioRouteWithChildren
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/portfolio/$eventId': typeof PortfolioEventIdRoute
+  '/portfolio/': typeof PortfolioIndexRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
 }
 export interface FileRoutesByTo {
@@ -89,10 +89,10 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/portfolio': typeof PortfolioRouteWithChildren
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/portfolio/$eventId': typeof PortfolioEventIdRoute
+  '/portfolio': typeof PortfolioIndexRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
 }
 export interface FileRoutesById {
@@ -102,10 +102,10 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/portfolio': typeof PortfolioRouteWithChildren
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/portfolio/$eventId': typeof PortfolioEventIdRoute
+  '/portfolio/': typeof PortfolioIndexRoute
   '/api/public/img/$': typeof ApiPublicImgSplatRoute
 }
 export interface FileRouteTypes {
@@ -116,10 +116,10 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/contact'
-    | '/portfolio'
     | '/services'
     | '/sitemap.xml'
     | '/portfolio/$eventId'
+    | '/portfolio/'
     | '/api/public/img/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -128,10 +128,10 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/contact'
-    | '/portfolio'
     | '/services'
     | '/sitemap.xml'
     | '/portfolio/$eventId'
+    | '/portfolio'
     | '/api/public/img/$'
   id:
     | '__root__'
@@ -140,10 +140,10 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/contact'
-    | '/portfolio'
     | '/services'
     | '/sitemap.xml'
     | '/portfolio/$eventId'
+    | '/portfolio/'
     | '/api/public/img/$'
   fileRoutesById: FileRoutesById
 }
@@ -153,9 +153,10 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
-  PortfolioRoute: typeof PortfolioRouteWithChildren
   ServicesRoute: typeof ServicesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  PortfolioEventIdRoute: typeof PortfolioEventIdRoute
+  PortfolioIndexRoute: typeof PortfolioIndexRoute
   ApiPublicImgSplatRoute: typeof ApiPublicImgSplatRoute
 }
 
@@ -173,13 +174,6 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portfolio': {
-      id: '/portfolio'
-      path: '/portfolio'
-      fullPath: '/portfolio'
-      preLoaderRoute: typeof PortfolioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -217,12 +211,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio/': {
+      id: '/portfolio/'
+      path: '/portfolio'
+      fullPath: '/portfolio/'
+      preLoaderRoute: typeof PortfolioIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio/$eventId': {
       id: '/portfolio/$eventId'
-      path: '/$eventId'
+      path: '/portfolio/$eventId'
       fullPath: '/portfolio/$eventId'
       preLoaderRoute: typeof PortfolioEventIdRouteImport
-      parentRoute: typeof PortfolioRoute
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/img/$': {
       id: '/api/public/img/$'
@@ -234,27 +235,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface PortfolioRouteChildren {
-  PortfolioEventIdRoute: typeof PortfolioEventIdRoute
-}
-
-const PortfolioRouteChildren: PortfolioRouteChildren = {
-  PortfolioEventIdRoute: PortfolioEventIdRoute,
-}
-
-const PortfolioRouteWithChildren = PortfolioRoute._addFileChildren(
-  PortfolioRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
-  PortfolioRoute: PortfolioRouteWithChildren,
   ServicesRoute: ServicesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  PortfolioEventIdRoute: PortfolioEventIdRoute,
+  PortfolioIndexRoute: PortfolioIndexRoute,
   ApiPublicImgSplatRoute: ApiPublicImgSplatRoute,
 }
 export const routeTree = rootRouteImport
