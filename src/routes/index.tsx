@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Reveal } from "@/components/Reveal";
 import { useCopy } from "@/hooks/use-copy";
 import { Testimonials } from "@/components/Testimonials";
