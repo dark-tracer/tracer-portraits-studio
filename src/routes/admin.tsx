@@ -33,6 +33,8 @@ import {
   adminListMessages,
   markMessageRead,
   deleteMessage,
+  adminListServicePackages,
+  updateServicePackage,
 } from "@/lib/admin.functions";
 import { COPY_GROUPS, COPY_DEFAULTS } from "@/lib/site-copy";
 import { listEvents, listHero, getEvent } from "@/lib/portfolio-db.functions";
@@ -44,7 +46,16 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Tab = "events" | "hero" | "about" | "packages" | "testimonials" | "faqs" | "content" | "messages";
+type Tab =
+  | "events"
+  | "hero"
+  | "about"
+  | "services"
+  | "packages"
+  | "testimonials"
+  | "faqs"
+  | "content"
+  | "messages";
 type Category = "portrait" | "wedding" | "event";
 
 function AdminPage() {
@@ -84,6 +95,7 @@ function AdminPage() {
     { key: "events", label: "Events & Sessions" },
     { key: "hero", label: "Hero Carousel" },
     { key: "about", label: "About Page" },
+    { key: "services", label: "Services" },
     { key: "packages", label: "Packages" },
     { key: "testimonials", label: "Testimonials" },
     { key: "faqs", label: "FAQs" },
@@ -129,6 +141,7 @@ function AdminPage() {
         {tab === "events" && <EventsTab />}
         {tab === "hero" && <HeroTab />}
         {tab === "about" && <AboutTab />}
+        {tab === "services" && <ServicesTab />}
         {tab === "packages" && <PackagesTab />}
         {tab === "testimonials" && <TestimonialsTab />}
         {tab === "faqs" && <FaqsTab />}
@@ -1386,6 +1399,127 @@ function MessagesTab() {
         ))}
         {items.length === 0 && (
           <p className="text-muted-foreground py-12 text-center">No messages yet.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ============ SERVICES TAB ============
+type ServicePkg = {
+  id: string;
+  category: string;
+  package_name: string;
+  price_ghs: number;
+  duration: string;
+  edited_images: string;
+  extras: string[];
+  delivery_days: number;
+  display_order: number;
+  is_active: boolean;
+};
+
+function ServicesTab() {
+  const load = useServerFn(adminListServicePackages);
+  const save = useServerFn(updateServicePackage);
+  const [items, setItems] = useState<ServicePkg[]>([]);
+  const [draft, setDraft] = useState<Record<string, { price: string; active: boolean }>>({});
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const refresh = useCallback(() => {
+    load().then((rows: any) => {
+      const list = (rows ?? []) as ServicePkg[];
+      setItems(list);
+      setDraft(
+        Object.fromEntries(
+          list.map((p) => [p.id, { price: String(p.price_ghs), active: p.is_active }]),
+        ),
+      );
+    });
+  }, [load]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  const categories = Array.from(new Set(items.map((p) => p.category)));
+
+  return (
+    <div>
+      <h2 className="font-serif text-2xl mb-6">Service Packages ({items.length})</h2>
+      <div className="space-y-10">
+        {categories.map((cat) => (
+          <div key={cat}>
+            <h3 className="text-[11px] uppercase tracking-widest-xl text-[var(--gold)] mb-4">
+              {cat}
+            </h3>
+            <div className="grid gap-3">
+              {items
+                .filter((p) => p.category === cat)
+                .map((p) => {
+                  const d = draft[p.id] ?? { price: String(p.price_ghs), active: p.is_active };
+                  return (
+                    <div
+                      key={p.id}
+                      className="border border-border p-4 flex flex-wrap items-center gap-4"
+                    >
+                      <div className="min-w-[180px] flex-1">
+                        <p className="font-serif text-lg">{p.package_name}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {p.duration} · {p.edited_images} · {p.delivery_days} days
+                        </p>
+                      </div>
+                      <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                        GHS
+                        <input
+                          type="number"
+                          min={0}
+                          step="1"
+                          value={d.price}
+                          onChange={(e) =>
+                            setDraft((s) => ({ ...s, [p.id]: { ...d, price: e.target.value } }))
+                          }
+                          className="w-28 bg-transparent border border-border px-3 py-2 text-sm text-foreground"
+                        />
+                      </label>
+                      <label className="flex items-center gap-2 text-xs uppercase tracking-widest-xl text-muted-foreground">
+                        <input
+                          type="checkbox"
+                          checked={d.active}
+                          onChange={(e) =>
+                            setDraft((s) => ({ ...s, [p.id]: { ...d, active: e.target.checked } }))
+                          }
+                        />
+                        {d.active ? "Active" : "Hidden"}
+                      </label>
+                      <button
+                        disabled={busy === p.id}
+                        onClick={async () => {
+                          setBusy(p.id);
+                          try {
+                            await save({
+                              data: {
+                                id: p.id,
+                                price_ghs: Number(d.price) || 0,
+                                is_active: d.active,
+                              },
+                            });
+                            refresh();
+                          } finally {
+                            setBusy(null);
+                          }
+                        }}
+                        className="bg-primary text-primary-foreground px-5 py-2 text-[11px] uppercase tracking-widest-xl disabled:opacity-50"
+                      >
+                        {busy === p.id ? "Saving…" : "Save"}
+                      </button>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        ))}
+        {items.length === 0 && (
+          <p className="text-muted-foreground py-12 text-center">No service packages yet.</p>
         )}
       </div>
     </div>

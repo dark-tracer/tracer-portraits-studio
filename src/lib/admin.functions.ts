@@ -494,3 +494,35 @@ export const deleteMessage = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ============ SERVICE PACKAGES ============
+export const adminListServicePackages = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { data } = await sb
+      .from("service_packages")
+      .select("*")
+      .order("category", { ascending: true })
+      .order("display_order", { ascending: true });
+    return data ?? [];
+  });
+
+export const updateServicePackage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        price_ghs: z.number().min(0),
+        is_active: z.boolean(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const sb = await requireAdmin(context.userId, (context.claims as any).email);
+    const { id, ...rest } = data;
+    const { error } = await sb.from("service_packages").update(rest).eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
