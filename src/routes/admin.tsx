@@ -33,6 +33,8 @@ import {
   adminListMessages,
   markMessageRead,
   deleteMessage,
+  adminListServicePackages,
+  updateServicePackage,
 } from "@/lib/admin.functions";
 import { COPY_GROUPS, COPY_DEFAULTS } from "@/lib/site-copy";
 import { listEvents, listHero, getEvent } from "@/lib/portfolio-db.functions";
@@ -44,7 +46,16 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Tab = "events" | "hero" | "about" | "packages" | "testimonials" | "faqs" | "content" | "messages";
+type Tab =
+  | "events"
+  | "hero"
+  | "about"
+  | "services"
+  | "packages"
+  | "testimonials"
+  | "faqs"
+  | "content"
+  | "messages";
 type Category = "portrait" | "wedding" | "event";
 
 function AdminPage() {
@@ -84,6 +95,7 @@ function AdminPage() {
     { key: "events", label: "Events & Sessions" },
     { key: "hero", label: "Hero Carousel" },
     { key: "about", label: "About Page" },
+    { key: "services", label: "Services" },
     { key: "packages", label: "Packages" },
     { key: "testimonials", label: "Testimonials" },
     { key: "faqs", label: "FAQs" },
@@ -129,6 +141,7 @@ function AdminPage() {
         {tab === "events" && <EventsTab />}
         {tab === "hero" && <HeroTab />}
         {tab === "about" && <AboutTab />}
+        {tab === "services" && <ServicesTab />}
         {tab === "packages" && <PackagesTab />}
         {tab === "testimonials" && <TestimonialsTab />}
         {tab === "faqs" && <FaqsTab />}
