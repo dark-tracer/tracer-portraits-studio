@@ -175,3 +175,31 @@ export const listFaqs = createServerFn({ method: "GET" }).handler(async (): Prom
     .order("sort_order", { ascending: true });
   return (data ?? []) as FaqRow[];
 });
+
+// ============ SERVICE PACKAGES (public read) ============
+export type ServicePackageRow = {
+  id: string;
+  category: string;
+  package_name: string;
+  price_ghs: number;
+  duration: string;
+  edited_images: string;
+  extras: string[];
+  delivery_days: number;
+  display_order: number;
+  is_active: boolean;
+};
+
+export const listServicePackages = createServerFn({ method: "GET" }).handler(
+  async (): Promise<ServicePackageRow[]> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("service_packages")
+      .select(
+        "id, category, package_name, price_ghs, duration, edited_images, extras, delivery_days, display_order, is_active",
+      )
+      .eq("is_active", true)
+      .order("display_order", { ascending: true });
+    return (data ?? []) as ServicePackageRow[];
+  },
+);
