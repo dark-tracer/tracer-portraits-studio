@@ -229,6 +229,51 @@ export type Database = {
           },
         ]
       }
+      service_packages: {
+        Row: {
+          category: string
+          created_at: string
+          delivery_days: number
+          display_order: number
+          duration: string
+          edited_images: string
+          extras: string[]
+          id: string
+          is_active: boolean
+          package_name: string
+          price_ghs: number
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          delivery_days?: number
+          display_order?: number
+          duration?: string
+          edited_images?: string
+          extras?: string[]
+          id?: string
+          is_active?: boolean
+          package_name: string
+          price_ghs?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          delivery_days?: number
+          display_order?: number
+          duration?: string
+          edited_images?: string
+          extras?: string[]
+          id?: string
+          is_active?: boolean
+          package_name?: string
+          price_ghs?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_content: {
         Row: {
           key: string
